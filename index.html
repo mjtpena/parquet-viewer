@@ -4,7 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Parquet Viewer</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
     <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --accent-color: #4f46e5;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+            --text-light: rgba(255, 255, 255, 0.9);
+            --text-muted: rgba(255, 255, 255, 0.7);
+            --bg-glass: rgba(255, 255, 255, 0.1);
+            --bg-glass-hover: rgba(255, 255, 255, 0.15);
+            --border-light: rgba(255, 255, 255, 0.2);
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -12,15 +30,16 @@
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
             min-height: 100vh;
-            color: white;
+            color: var(--text-light);
             padding: 20px;
+            line-height: 1.6;
         }
         
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
         }
         
@@ -33,6 +52,10 @@
             font-size: 2.5rem;
             margin-bottom: 10px;
             font-weight: 700;
+            background: linear-gradient(45deg, #fff, #e0e7ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
         
         .subtitle {
@@ -47,28 +70,42 @@
             margin-top: 10px;
             font-size: 0.9rem;
             opacity: 0.8;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .badge {
+            background: var(--bg-glass);
+            padding: 6px 12px;
+            border-radius: 20px;
+            border: 1px solid var(--border-light);
+            backdrop-filter: blur(10px);
         }
         
         .upload-area {
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--bg-glass);
             backdrop-filter: blur(10px);
             border-radius: 20px;
             padding: 40px 20px;
             text-align: center;
-            border: 2px dashed rgba(255, 255, 255, 0.3);
-            transition: all 0.3s;
+            border: 2px dashed var(--border-light);
+            transition: all 0.3s ease;
             margin-bottom: 30px;
+            position: relative;
         }
         
         .upload-area:hover {
-            background: rgba(255, 255, 255, 0.15);
+            background: var(--bg-glass-hover);
             border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
         }
         
         .upload-area.dragover {
             background: rgba(255, 255, 255, 0.2);
             border-color: white;
             transform: scale(1.02);
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
         }
         
         .upload-icon {
@@ -76,6 +113,7 @@
             height: 80px;
             margin: 0 auto 20px;
             animation: float 3s ease-in-out infinite;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
         }
         
         @keyframes float {
@@ -99,31 +137,54 @@
             display: none;
         }
         
-        .select-btn {
-            background: rgba(255, 255, 255, 0.2);
+        .btn {
+            background: var(--bg-glass);
             border: 2px solid white;
             color: white;
             padding: 12px 30px;
             font-size: 1rem;
             border-radius: 30px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
         }
         
-        .select-btn:hover {
+        .btn:hover {
             background: white;
-            color: #667eea;
+            color: var(--primary-color);
             transform: scale(1.05);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-secondary {
+            background: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+
+        .btn-secondary:hover {
+            background: #3730a3;
+            border-color: #3730a3;
+            color: white;
+        }
+
+        .btn-small {
+            padding: 6px 16px;
+            font-size: 0.9rem;
+            border-radius: 20px;
         }
         
         .loading {
             text-align: center;
             padding: 40px;
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--bg-glass);
             backdrop-filter: blur(10px);
             border-radius: 20px;
             margin-bottom: 30px;
+            border: 1px solid var(--border-light);
         }
         
         .spinner {
@@ -134,6 +195,23 @@
             border-radius: 50%;
             margin: 0 auto 20px;
             animation: spin 1s linear infinite;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            border-radius: 4px;
+            transition: width 0.3s ease;
+            width: 0%;
         }
         
         @keyframes spin {
@@ -146,115 +224,465 @@
             padding: 20px;
             border-radius: 15px;
             margin-bottom: 20px;
+            backdrop-filter: blur(10px);
         }
         
         .error h3 {
             margin-bottom: 10px;
             color: #fca5a5;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        
-        .section {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 20px;
+
+        .success {
+            background: rgba(16, 185, 129, 0.2);
+            border: 2px solid rgba(16, 185, 129, 0.5);
+            padding: 15px 20px;
+            border-radius: 10px;
             margin-bottom: 20px;
-        }
-        
-        .section h2 {
-            font-size: 1.3rem;
-            margin-bottom: 15px;
+            backdrop-filter: blur(10px);
             display: flex;
             align-items: center;
             gap: 10px;
         }
         
+        .section {
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+        }
+
+        .section:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .section h2 {
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+        }
+
+        .section-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 200px;
+            max-width: 300px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 40px 10px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border-light);
+            border-radius: 25px;
+            color: white;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: white;
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            opacity: 0.6;
+        }
+
+        .filter-dropdown {
+            position: relative;
+        }
+
+        .dropdown-content {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: rgba(30, 30, 30, 0.95);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            padding: 10px;
+            z-index: 1000;
+            min-width: 200px;
+            box-shadow: var(--shadow-lg);
+            display: none;
+        }
+
+        .dropdown-content.show {
+            display: block;
+        }
+
+        .filter-option {
+            padding: 8px 12px;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+
+        .filter-option:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 5px;
+            border-radius: 10px;
+            overflow-x: auto;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .tab.active {
+            background: white;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .tab:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+        
         .info-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
             margin-top: 15px;
         }
         
         .info-card {
             background: rgba(255, 255, 255, 0.1);
-            padding: 15px;
-            border-radius: 10px;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .info-card:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
         }
         
         .info-label {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             opacity: 0.8;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 500;
         }
         
         .info-value {
-            font-size: 1.2rem;
-            font-weight: 600;
+            font-size: 1.4rem;
+            font-weight: 700;
+            word-break: break-all;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
         table {
             width: 100%;
             border-collapse: collapse;
             font-size: 0.9rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
         }
         
         th {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 10px;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 15px 12px;
             text-align: left;
             font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        th.sortable {
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.2s ease;
+        }
+
+        th.sortable:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        th.sorted-asc::after {
+            content: ' ↑';
+            opacity: 0.7;
+        }
+
+        th.sorted-desc::after {
+            content: ' ↓';
+            opacity: 0.7;
         }
         
         td {
-            padding: 8px 10px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: background 0.2s ease;
         }
         
         tr:hover {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .row-number {
+            background: rgba(255, 255, 255, 0.1) !important;
+            font-weight: 600;
+            text-align: center;
+            font-size: 0.8rem;
+            opacity: 0.8;
+            width: 60px;
+            position: sticky;
+            left: 0;
+            z-index: 5;
+        }
+
+        .cell-null {
+            color: #9ca3af;
+            font-style: italic;
+            opacity: 0.7;
+        }
+
+        .cell-boolean {
+            color: #fbbf24;
+            font-weight: 600;
+        }
+
+        .cell-number {
+            color: #34d399;
+            font-weight: 500;
+            text-align: right;
+        }
+
+        .cell-string {
+            color: #e5e7eb;
+        }
+
+        .cell-object {
+            color: #a78bfa;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+        }
+
+        .type-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .type-string { background: #1e40af; color: white; }
+        .type-number { background: #059669; color: white; }
+        .type-boolean { background: #d97706; color: white; }
+        .type-date { background: #7c3aed; color: white; }
+        .type-object { background: #dc2626; color: white; }
+
+        .encoding-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            margin: 2px;
+            background: rgba(99, 102, 241, 0.2);
+            color: #c7d2fe;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        .compression-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            background: rgba(16, 185, 129, 0.2);
+            color: #6ee7b7;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            font-weight: 600;
         }
         
         .table-wrapper {
-            overflow-x: auto;
+            overflow: auto;
             margin-top: 15px;
+            max-height: 600px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .table-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .page-size-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .page-size-selector select {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 0.9rem;
         }
         
         .pagination {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            flex-wrap: wrap;
+            gap: 15px;
         }
         
         .page-info {
             font-size: 0.9rem;
             opacity: 0.8;
+            font-weight: 500;
+        }
+
+        .page-info span {
+            font-weight: 600;
+            color: white;
         }
         
         .page-buttons {
             display: flex;
             gap: 10px;
+            align-items: center;
+        }
+
+        .page-jump {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .page-jump input {
+            width: 60px;
+            padding: 6px 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
+            color: white;
+            text-align: center;
+            font-size: 0.9rem;
         }
         
         .page-btn {
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             color: white;
-            padding: 5px 15px;
-            border-radius: 5px;
+            padding: 8px 16px;
+            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            font-weight: 500;
         }
         
         .page-btn:hover:not(:disabled) {
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
         }
         
         .page-btn:disabled {
-            opacity: 0.5;
+            opacity: 0.4;
             cursor: not-allowed;
         }
         
@@ -266,24 +694,108 @@
         }
         
         .export-btn {
-            background: rgba(255, 255, 255, 0.2);
-            border: 2px solid rgba(255, 255, 255, 0.5);
+            background: var(--bg-glass);
+            border: 2px solid rgba(255, 255, 255, 0.3);
             color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
+            padding: 12px 20px;
+            border-radius: 10px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             font-size: 0.9rem;
             font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
         .export-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.2);
             transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .export-btn:active {
+            transform: translateY(0);
+        }
+
+        .metadata-raw {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            line-height: 1.4;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         
         .hidden {
             display: none !important;
+        }
+
+        .tooltip {
+            position: relative;
+            cursor: help;
+        }
+
+        .tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .tooltip:hover::after {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .performance-info {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .keyboard-shortcuts {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            max-width: 250px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .keyboard-shortcuts.show {
+            opacity: 1;
+            transform: translateY(0);
         }
         
         @media (max-width: 768px) {
@@ -309,6 +821,10 @@
             }
             
             .info-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+
+            .stats-grid {
                 grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
             }
             
@@ -317,7 +833,53 @@
             }
             
             th, td {
-                padding: 6px;
+                padding: 8px 6px;
+            }
+
+            .section {
+                padding: 20px 15px;
+            }
+
+            .tabs {
+                flex-wrap: wrap;
+            }
+
+            .pagination {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .table-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-box {
+                max-width: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .privacy-badge {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .page-buttons {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .export-buttons {
+                flex-direction: column;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
             }
         }
     </style>
@@ -328,8 +890,9 @@
             <h1>⚡ Parquet Viewer</h1>
             <div class="subtitle">Analyze Parquet files instantly in your browser</div>
             <div class="privacy-badge">
-                <span>🔒 100% Private</span>
-                <span>📊 No Upload Required</span>
+                <span class="badge">🔒 100% Private</span>
+                <span class="badge">📊 No Upload Required</span>
+                <span class="badge">⚡ Lightning Fast</span>
             </div>
         </header>
 
@@ -338,302 +901,670 @@
                 <path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
             </svg>
             <div class="upload-text">Drop Parquet File Here</div>
-            <div class="upload-subtext">or click to browse</div>
+            <div class="upload-subtext">Supports .parquet files up to 500MB</div>
             <input type="file" id="fileInput" class="file-input" accept=".parquet">
-            <button class="select-btn" onclick="document.getElementById('fileInput').click()">
+            <button class="btn" onclick="document.getElementById('fileInput').click()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path>
+                    <polyline points="14,2 14,8 20,8"></polyline>
+                </svg>
                 Select File
             </button>
         </div>
 
         <div id="loadingSection" class="loading hidden">
             <div class="spinner"></div>
-            <div>Processing Parquet file...</div>
+            <div id="loadingText">Processing Parquet file...</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div id="loadingStats" style="margin-top: 10px; font-size: 0.9rem; opacity: 0.8;"></div>
         </div>
 
         <div id="errorSection" class="error hidden">
-            <h3>Error Loading File</h3>
+            <h3>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="15" y1="9" x2="9" y2="15"></line>
+                    <line x1="9" y1="9" x2="15" y2="15"></line>
+                </svg>
+                Error Loading File
+            </h3>
             <div id="errorMessage"></div>
+            <button class="btn btn-small" style="margin-top: 15px;" onclick="resetViewer()">Try Another File</button>
+        </div>
+
+        <div id="successSection" class="success hidden">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 11-5.93-9.14"></path>
+                <polyline points="22,4 12,14.01 9,11.01"></polyline>
+            </svg>
+            <span id="successMessage"></span>
         </div>
 
         <div id="resultsSection" class="hidden">
+            <!-- File Overview -->
             <div class="section">
-                <h2>📁 File Information</h2>
+                <h2>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path>
+                        <polyline points="14,2 14,8 20,8"></polyline>
+                    </svg>
+                    File Overview
+                </h2>
                 <div id="fileInfo" class="info-grid"></div>
+                <div id="fileStats" class="stats-grid"></div>
+                <div id="performanceInfo" class="performance-info hidden"></div>
             </div>
 
+            <!-- Advanced Metadata -->
             <div class="section">
-                <h2>📋 Schema</h2>
-                <div class="table-wrapper">
-                    <table id="schemaTable"></table>
+                <h2>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"></path>
+                    </svg>
+                    Metadata & Statistics
+                </h2>
+                <div class="tabs">
+                    <button class="tab active" onclick="showMetaTab('general')">General</button>
+                    <button class="tab" onclick="showMetaTab('schema')">Schema</button>
+                    <button class="tab" onclick="showMetaTab('columns')">Column Stats</button>
+                    <button class="tab" onclick="showMetaTab('rowgroups')">Row Groups</button>
+                    <button class="tab" onclick="showMetaTab('raw')">Raw Metadata</button>
+                </div>
+                
+                <div id="metaGeneral" class="tab-content active">
+                    <div id="generalMetadata" class="info-grid"></div>
+                </div>
+                
+                <div id="metaSchema" class="tab-content">
+                    <div class="table-wrapper">
+                        <table id="schemaTable"></table>
+                    </div>
+                </div>
+                
+                <div id="metaColumns" class="tab-content">
+                    <div class="table-wrapper">
+                        <table id="columnStatsTable"></table>
+                    </div>
+                </div>
+                
+                <div id="metaRowgroups" class="tab-content">
+                    <div class="table-wrapper">
+                        <table id="rowGroupTable"></table>
+                    </div>
+                </div>
+                
+                <div id="metaRaw" class="tab-content">
+                    <div class="metadata-raw" id="rawMetadata"></div>
                 </div>
             </div>
 
+            <!-- Data Preview -->
             <div class="section">
-                <h2>📊 Data Preview</h2>
+                <h2>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 3h18v18H3zM21 9H3M9 21V9"></path>
+                    </svg>
+                    Data Preview
+                </h2>
+                
+                <div class="table-controls">
+                    <div class="search-box">
+                        <input type="text" id="searchInput" class="search-input" placeholder="Search data...">
+                        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="M21 21l-4.35-4.35"></path>
+                        </svg>
+                    </div>
+                    
+                    <div class="page-size-selector">
+                        <label for="pageSizeSelect">Rows per page:</label>
+                        <select id="pageSizeSelect" onchange="changePageSize()">
+                            <option value="25">25</option>
+                            <option value="50" selected>50</option>
+                            <option value="100">100</option>
+                            <option value="200">200</option>
+                            <option value="500">500</option>
+                        </select>
+                    </div>
+                    
+                    <button class="btn btn-small" onclick="refreshData()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="23 4 23 10 17 10"></polyline>
+                            <polyline points="1 20 1 14 7 14"></polyline>
+                            <path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 003.51 15"></path>
+                        </svg>
+                        Refresh
+                    </button>
+                </div>
+                
                 <div class="table-wrapper">
                     <table id="dataTable"></table>
                 </div>
+                
                 <div class="pagination">
-                    <span id="pageInfo" class="page-info"></span>
+                    <div class="page-info" id="pageInfo"></div>
                     <div class="page-buttons">
+                        <button id="firstBtn" class="page-btn" onclick="goToPage(0)">First</button>
                         <button id="prevBtn" class="page-btn" onclick="changePage(-1)">Previous</button>
+                        <div class="page-jump">
+                            <span>Page</span>
+                            <input type="number" id="pageJumpInput" min="1" onkeypress="handlePageJump(event)">
+                            <span id="totalPagesText"></span>
+                        </div>
                         <button id="nextBtn" class="page-btn" onclick="changePage(1)">Next</button>
+                        <button id="lastBtn" class="page-btn" onclick="goToLastPage()">Last</button>
                     </div>
                 </div>
             </div>
 
+            <!-- Export Options -->
             <div class="section">
-                <h2>💾 Export Options</h2>
+                <h2>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    Export Data
+                </h2>
                 <div class="export-buttons">
-                    <button class="export-btn" onclick="exportData('csv')">Export as CSV</button>
-                    <button class="export-btn" onclick="exportData('json')">Export as JSON</button>
+                    <button class="export-btn" onclick="exportData('csv')">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path>
+                        </svg>
+                        Export as CSV
+                    </button>
+                    <button class="export-btn" onclick="exportData('json')">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path>
+                        </svg>
+                        Export as JSON
+                    </button>
+                    <button class="export-btn" onclick="exportData('filtered-csv')">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="M21 21l-4.35-4.35"></path>
+                        </svg>
+                        Export Filtered (CSV)
+                    </button>
+                    <button class="export-btn" onclick="exportData('schema')">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                        </svg>
+                        Export Schema
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Keyboard Shortcuts Help -->
+    <div id="keyboardHelp" class="keyboard-shortcuts">
+        <strong>Keyboard Shortcuts</strong><br>
+        <kbd>?</kbd> Toggle this help<br>
+        <kbd>Ctrl+F</kbd> Focus search<br>
+        <kbd>←→</kbd> Navigate pages<br>
+        <kbd>Ctrl+E</kbd> Export CSV<br>
+        <kbd>Esc</kbd> Reset view
+    </div>
+
     <script type="module">
         import { parquetMetadata, parquetRead, parquetSchema } from 'https://cdn.jsdelivr.net/npm/hyparquet@1.16.0/+esm';
         
-        let data = [];
-        let metadata = null;
-        let schema = null;
-        let currentPage = 0;
-        const pageSize = 50;
-        
-        // Setup drag and drop
-        const uploadArea = document.getElementById('uploadSection');
-        const fileInput = document.getElementById('fileInput');
-        
-        uploadArea.addEventListener('dragover', (e) => {
+        // Global state
+        let state = {
+            data: [],
+            filteredData: [],
+            metadata: null,
+            schema: null,
+            currentPage: 0,
+            pageSize: 50,
+            searchTerm: '',
+            sortColumn: null,
+            sortDirection: 'asc',
+            processingStartTime: null,
+            selectedFile: null
+        };
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', initializeApp);
+
+        function initializeApp() {
+            setupEventListeners();
+            setupKeyboardShortcuts();
+        }
+
+        function setupEventListeners() {
+            const uploadArea = document.getElementById('uploadSection');
+            const fileInput = document.getElementById('fileInput');
+            const searchInput = document.getElementById('searchInput');
+
+            // Drag and drop
+            uploadArea.addEventListener('dragover', handleDragOver);
+            uploadArea.addEventListener('dragleave', handleDragLeave);
+            uploadArea.addEventListener('drop', handleDrop);
+            
+            // File input
+            fileInput.addEventListener('change', handleFileSelect);
+            
+            // Search
+            searchInput.addEventListener('input', debounce(handleSearch, 300));
+        }
+
+        function setupKeyboardShortcuts() {
+            document.addEventListener('keydown', (e) => {
+                // Ctrl+F - Focus search
+                if (e.ctrlKey && e.key === 'f') {
+                    e.preventDefault();
+                    document.getElementById('searchInput')?.focus();
+                }
+                // Arrow keys for pagination
+                else if (e.key === 'ArrowLeft' && !e.target.matches('input')) {
+                    changePage(-1);
+                }
+                else if (e.key === 'ArrowRight' && !e.target.matches('input')) {
+                    changePage(1);
+                }
+                // Ctrl+E - Export CSV
+                else if (e.ctrlKey && e.key === 'e') {
+                    e.preventDefault();
+                    exportData('csv');
+                }
+                // Escape - Reset view
+                else if (e.key === 'Escape') {
+                    resetViewer();
+                }
+                // ? - Toggle help
+                else if (e.key === '?') {
+                    toggleKeyboardHelp();
+                }
+            });
+        }
+
+        function handleDragOver(e) {
             e.preventDefault();
-            uploadArea.classList.add('dragover');
-        });
-        
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.classList.remove('dragover');
-        });
-        
-        uploadArea.addEventListener('drop', (e) => {
+            e.currentTarget.classList.add('dragover');
+        }
+
+        function handleDragLeave(e) {
+            e.currentTarget.classList.remove('dragover');
+        }
+
+        function handleDrop(e) {
             e.preventDefault();
-            uploadArea.classList.remove('dragover');
+            e.currentTarget.classList.remove('dragover');
             const files = e.dataTransfer.files;
             if (files.length > 0) handleFile(files[0]);
-        });
-        
-        fileInput.addEventListener('change', (e) => {
+        }
+
+        function handleFileSelect(e) {
             if (e.target.files.length > 0) handleFile(e.target.files[0]);
-        });
-        
+        }
+
         async function handleFile(file) {
-            if (!file.name.endsWith('.parquet')) {
+            if (!file.name.toLowerCase().endsWith('.parquet')) {
                 showError('Please select a valid .parquet file');
                 return;
             }
+
+            if (file.size > 500 * 1024 * 1024) { // 500MB limit
+                showError('File size exceeds 500MB limit. Please select a smaller file.');
+                return;
+            }
+
+            state.selectedFile = file;
+            state.processingStartTime = performance.now();
             
             showLoading();
-            
+            updateProgress(10, 'Reading file...');
+
             try {
                 const buffer = await file.arrayBuffer();
+                updateProgress(30, 'Parsing metadata...');
                 
                 // Parse metadata
-                metadata = parquetMetadata(buffer);
-                schema = parquetSchema(metadata);
+                state.metadata = parquetMetadata(buffer);
+                state.schema = parquetSchema(state.metadata);
+                updateProgress(50, 'Loading data...');
                 
-                // Read data
-                data = [];
+                // Read data with progress tracking
+                state.data = [];
                 await parquetRead({
                     file: buffer,
                     onComplete: (rows) => {
-                        data = rows;
+                        state.data = rows;
+                        updateProgress(90, 'Finalizing...');
                     }
                 });
+
+                updateProgress(100, 'Complete!');
                 
-                showResults(file);
+                setTimeout(() => {
+                    showResults();
+                }, 500);
+                
             } catch (error) {
-                showError(error.message || 'Failed to read file');
-                console.error(error);
+                console.error('Error processing file:', error);
+                showError(error.message || 'Failed to read file. Please ensure it\'s a valid Parquet file.');
             }
         }
-        
+
+        function updateProgress(percent, message) {
+            const progressFill = document.getElementById('progressFill');
+            const loadingText = document.getElementById('loadingText');
+            const loadingStats = document.getElementById('loadingStats');
+            
+            if (progressFill) progressFill.style.width = percent + '%';
+            if (loadingText) loadingText.textContent = message;
+            
+            if (loadingStats && state.processingStartTime) {
+                const elapsed = ((performance.now() - state.processingStartTime) / 1000).toFixed(1);
+                loadingStats.textContent = `Processing time: ${elapsed}s`;
+            }
+        }
+
         function showLoading() {
             document.getElementById('uploadSection').classList.add('hidden');
             document.getElementById('loadingSection').classList.remove('hidden');
             document.getElementById('errorSection').classList.add('hidden');
+            document.getElementById('successSection').classList.add('hidden');
             document.getElementById('resultsSection').classList.add('hidden');
         }
-        
+
         function showError(message) {
             document.getElementById('uploadSection').classList.remove('hidden');
             document.getElementById('loadingSection').classList.add('hidden');
             document.getElementById('errorSection').classList.remove('hidden');
+            document.getElementById('successSection').classList.add('hidden');
             document.getElementById('resultsSection').classList.add('hidden');
             document.getElementById('errorMessage').textContent = message;
         }
-        
-        function showResults(file) {
+
+        function showSuccess(message) {
+            document.getElementById('successSection').classList.remove('hidden');
+            document.getElementById('successMessage').textContent = message;
+            setTimeout(() => {
+                document.getElementById('successSection').classList.add('hidden');
+            }, 3000);
+        }
+
+        function showResults() {
+            const processingTime = ((performance.now() - state.processingStartTime) / 1000).toFixed(2);
+            
             document.getElementById('uploadSection').classList.add('hidden');
             document.getElementById('loadingSection').classList.add('hidden');
             document.getElementById('errorSection').classList.add('hidden');
             document.getElementById('resultsSection').classList.remove('hidden');
             
-            // Display file info
-            const fileInfo = document.getElementById('fileInfo');
-            const rows = Number(metadata.num_rows);
-            const cols = schema.children.length;
+            showSuccess(`File processed successfully in ${processingTime}s`);
             
+            // Initialize filtered data
+            state.filteredData = [...state.data];
+            state.currentPage = 0;
+            
+            // Render all sections
+            displayFileInfo();
+            displayMetadata();
+            displayData();
+            
+            // Show performance info
+            displayPerformanceInfo(processingTime);
+        }
+
+        function displayFileInfo() {
+            const fileInfo = document.getElementById('fileInfo');
+            const fileStats = document.getElementById('fileStats');
+            const file = state.selectedFile;
+            const rows = Number(state.metadata.num_rows);
+            const cols = state.schema.children.length;
+            
+            // Basic file info
             fileInfo.innerHTML = `
                 <div class="info-card">
                     <div class="info-label">File Name</div>
                     <div class="info-value">${file.name}</div>
                 </div>
                 <div class="info-card">
-                    <div class="info-label">Size</div>
+                    <div class="info-label">File Size</div>
                     <div class="info-value">${formatSize(file.size)}</div>
                 </div>
                 <div class="info-card">
-                    <div class="info-label">Rows</div>
+                    <div class="info-label">Total Rows</div>
                     <div class="info-value">${rows.toLocaleString()}</div>
                 </div>
                 <div class="info-card">
-                    <div class="info-label">Columns</div>
+                    <div class="info-label">Total Columns</div>
                     <div class="info-value">${cols}</div>
                 </div>
+                <div class="info-card">
+                    <div class="info-label">Format Version</div>
+                    <div class="info-value">${state.metadata.version || 1}</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">Row Groups</div>
+                    <div class="info-value">${state.metadata.row_groups?.length || 0}</div>
+                </div>
             `;
+
+            // Calculate statistics
+            const stats = calculateDataStatistics();
+            fileStats.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-number">${stats.nullCount.toLocaleString()}</div>
+                    <div class="stat-label">Null Values</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.numericColumns}</div>
+                    <div class="stat-label">Numeric Columns</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.stringColumns}</div>
+                    <div class="stat-label">Text Columns</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.uniqueValues.toLocaleString()}</div>
+                    <div class="stat-label">Unique Values</div>
+                </div>
+            `;
+        }
+
+        function calculateDataStatistics() {
+            if (state.data.length === 0) return { nullCount: 0, numericColumns: 0, stringColumns: 0, uniqueValues: 0 };
             
-            // Display schema
+            const columns = Object.keys(state.data[0]);
+            let nullCount = 0;
+            let numericColumns = 0;
+            let stringColumns = 0;
+            let uniqueValues = new Set();
+            
+            columns.forEach(col => {
+                let hasNumbers = false;
+                let hasStrings = false;
+                
+                state.data.forEach(row => {
+                    const value = row[col];
+                    if (value === null || value === undefined) {
+                        nullCount++;
+                    } else {
+                        uniqueValues.add(String(value));
+                        if (typeof value === 'number') hasNumbers = true;
+                        else if (typeof value === 'string') hasStrings = true;
+                    }
+                });
+                
+                if (hasNumbers && !hasStrings) numericColumns++;
+                else if (hasStrings) stringColumns++;
+            });
+            
+            return { nullCount, numericColumns, stringColumns, uniqueValues: uniqueValues.size };
+        }
+
+        function displayPerformanceInfo(processingTime) {
+            const perfInfo = document.getElementById('performanceInfo');
+            const rowsPerSecond = Math.round(state.data.length / parseFloat(processingTime));
+            const memoryUsage = formatSize(state.selectedFile.size);
+            
+            perfInfo.innerHTML = `
+                <strong>Performance Metrics:</strong> 
+                Processed ${state.data.length.toLocaleString()} rows in ${processingTime}s 
+                (~${rowsPerSecond.toLocaleString()} rows/sec, ${memoryUsage} memory usage)
+            `;
+            perfInfo.classList.remove('hidden');
+        }
+
+        function displayMetadata() {
+            // General metadata
+            const generalMeta = document.getElementById('generalMetadata');
+            const version = state.metadata.version || 1;
+            const createdBy = state.metadata.created_by || 'Unknown';
+            const rowGroups = state.metadata.row_groups?.length || 0;
+            const numRows = Number(state.metadata.num_rows);
+            
+            generalMeta.innerHTML = `
+                <div class="info-card">
+                    <div class="info-label">Format Version</div>
+                    <div class="info-value">${version}</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">Created By</div>
+                    <div class="info-value" title="${createdBy}">${createdBy.length > 30 ? createdBy.substring(0, 30) + '...' : createdBy}</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">Row Groups</div>
+                    <div class="info-value">${rowGroups}</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">Total Rows</div>
+                    <div class="info-value">${numRows.toLocaleString()}</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">Schema Fields</div>
+                    <div class="info-value">${state.schema.children.length}</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">Key-Value Metadata</div>
+                    <div class="info-value">${state.metadata.key_value_metadata?.length || 0} entries</div>
+                </div>
+            `;
+
+            // Schema table
+            displaySchemaTable();
+            
+            // Column statistics
+            displayColumnStats();
+            
+            // Row groups
+            displayRowGroups();
+            
+            // Raw metadata
+            displayRawMetadata();
+        }
+
+        function displaySchemaTable() {
             const schemaTable = document.getElementById('schemaTable');
-            let schemaHTML = '<thead><tr><th>Column Name</th><th>Type</th><th>Nullable</th></tr></thead><tbody>';
+            let html = '<thead><tr><th>Column Name</th><th>Type</th><th>Converted Type</th><th>Repetition</th><th>Nullable</th></tr></thead><tbody>';
             
-            schema.children.forEach(col => {
-                const type = col.element.converted_type || col.element.type || 'UNKNOWN';
-                const nullable = col.element.repetition_type !== 'REQUIRED' ? 'Yes' : 'No';
-                schemaHTML += `
+            state.schema.children.forEach(col => {
+                const type = col.element.type || 'UNKNOWN';
+                const convertedType = col.element.converted_type || '-';
+                const repetitionType = col.element.repetition_type || 'REQUIRED';
+                const nullable = repetitionType !== 'REQUIRED' ? 'Yes' : 'No';
+                
+                html += `
                     <tr>
                         <td><strong>${col.element.name}</strong></td>
-                        <td>${type}</td>
+                        <td><span class="type-badge type-${type.toLowerCase()}">${type}</span></td>
+                        <td>${convertedType}</td>
+                        <td>${repetitionType}</td>
                         <td>${nullable}</td>
                     </tr>
                 `;
             });
             
-            schemaHTML += '</tbody>';
-            schemaTable.innerHTML = schemaHTML;
-            
-            // Display metadata
-            displayMetadata();
-            
-            // Display data
-            currentPage = 0;
-            displayData();
+            html += '</tbody>';
+            schemaTable.innerHTML = html;
         }
-        
-        function displayMetadata() {
-            // General metadata
-            const metaGeneral = document.querySelector('#metaGeneral .meta-grid');
-            const version = metadata.version || 1;
-            const createdBy = metadata.created_by || 'Unknown';
-            const rowGroups = metadata.row_groups?.length || 0;
-            const numRows = Number(metadata.num_rows);
-            
-            metaGeneral.innerHTML = `
-                <div class="meta-card">
-                    <div class="meta-card-title">Format Version</div>
-                    <div class="meta-card-value">${version}</div>
-                </div>
-                <div class="meta-card">
-                    <div class="meta-card-title">Created By</div>
-                    <div class="meta-card-value small">${createdBy}</div>
-                </div>
-                <div class="meta-card">
-                    <div class="meta-card-title">Row Groups</div>
-                    <div class="meta-card-value">${rowGroups}</div>
-                </div>
-                <div class="meta-card">
-                    <div class="meta-card-title">Total Rows</div>
-                    <div class="meta-card-value">${numRows.toLocaleString()}</div>
-                </div>
-                <div class="meta-card">
-                    <div class="meta-card-title">Schema Fields</div>
-                    <div class="meta-card-value">${schema.children.length}</div>
-                </div>
-                <div class="meta-card">
-                    <div class="meta-card-title">Key-Value Metadata</div>
-                    <div class="meta-card-value">${metadata.key_value_metadata?.length || 0} entries</div>
-                </div>
-            `;
-            
-            // Column statistics
+
+        function displayColumnStats() {
             const columnStatsTable = document.getElementById('columnStatsTable');
-            let statsHTML = '<thead><tr><th>Column</th><th>Type</th><th>Encodings</th><th>Compression</th><th>Total Size</th><th>Compressed</th></tr></thead><tbody>';
+            let html = '<thead><tr><th>Column</th><th>Type</th><th>Encodings</th><th>Compression</th><th>Uncompressed Size</th><th>Compressed Size</th><th>Ratio</th></tr></thead><tbody>';
             
-            if (metadata.row_groups && metadata.row_groups.length > 0) {
-                const firstRowGroup = metadata.row_groups[0];
+            if (state.metadata.row_groups && state.metadata.row_groups.length > 0) {
+                const firstRowGroup = state.metadata.row_groups[0];
                 firstRowGroup.columns.forEach((col, idx) => {
-                    const colSchema = schema.children[idx];
+                    const colSchema = state.schema.children[idx];
                     const encodings = col.encodings ? col.encodings.join(', ') : 'PLAIN';
                     const compression = col.compression || 'UNCOMPRESSED';
                     const totalUncompressed = col.total_uncompressed_size || 0;
                     const totalCompressed = col.total_compressed_size || 0;
+                    const ratio = totalUncompressed > 0 ? (totalCompressed / totalUncompressed * 100).toFixed(1) + '%' : '-';
                     
-                    statsHTML += `
+                    html += `
                         <tr>
                             <td><strong>${colSchema.element.name}</strong></td>
-                            <td>${colSchema.element.type}</td>
+                            <td><span class="type-badge type-${colSchema.element.type.toLowerCase()}">${colSchema.element.type}</span></td>
                             <td>
                                 ${encodings.split(', ').map(e => `<span class="encoding-badge">${e}</span>`).join('')}
                             </td>
                             <td><span class="compression-badge">${compression}</span></td>
                             <td>${formatSize(totalUncompressed)}</td>
                             <td>${formatSize(totalCompressed)}</td>
+                            <td>${ratio}</td>
                         </tr>
                     `;
                 });
             }
             
-            statsHTML += '</tbody>';
-            columnStatsTable.innerHTML = statsHTML;
-            
-            // Row groups details
+            html += '</tbody>';
+            columnStatsTable.innerHTML = html;
+        }
+
+        function displayRowGroups() {
             const rowGroupTable = document.getElementById('rowGroupTable');
-            let rgHTML = '<thead><tr><th>Row Group</th><th>Rows</th><th>Total Size</th><th>Compressed Size</th><th>Columns</th></tr></thead><tbody>';
+            let html = '<thead><tr><th>Row Group</th><th>Rows</th><th>Columns</th><th>Total Size</th><th>Compressed Size</th><th>Compression Ratio</th></tr></thead><tbody>';
             
-            if (metadata.row_groups) {
-                metadata.row_groups.forEach((rg, idx) => {
+            if (state.metadata.row_groups) {
+                state.metadata.row_groups.forEach((rg, idx) => {
                     const totalUncompressed = rg.total_byte_size || 0;
                     const totalCompressed = rg.columns.reduce((sum, col) => sum + (col.total_compressed_size || 0), 0);
+                    const ratio = totalUncompressed > 0 ? (totalCompressed / totalUncompressed * 100).toFixed(1) + '%' : '-';
                     
-                    rgHTML += `
+                    html += `
                         <tr>
                             <td><strong>Group ${idx + 1}</strong></td>
                             <td>${Number(rg.num_rows).toLocaleString()}</td>
+                            <td>${rg.columns.length}</td>
                             <td>${formatSize(totalUncompressed)}</td>
                             <td>${formatSize(totalCompressed)}</td>
-                            <td>${rg.columns.length}</td>
+                            <td>${ratio}</td>
                         </tr>
                     `;
                 });
             }
             
-            rgHTML += '</tbody>';
-            rowGroupTable.innerHTML = rgHTML;
-            
-            // Raw metadata
+            html += '</tbody>';
+            rowGroupTable.innerHTML = html;
+        }
+
+        function displayRawMetadata() {
             const rawMeta = document.getElementById('rawMetadata');
             const metadataDisplay = {
-                version: metadata.version,
-                created_by: metadata.created_by,
-                num_rows: Number(metadata.num_rows),
-                key_value_metadata: metadata.key_value_metadata,
-                row_groups: metadata.row_groups?.map(rg => ({
+                version: state.metadata.version,
+                created_by: state.metadata.created_by,
+                num_rows: Number(state.metadata.num_rows),
+                key_value_metadata: state.metadata.key_value_metadata,
+                row_groups: state.metadata.row_groups?.map(rg => ({
                     num_rows: Number(rg.num_rows),
                     total_byte_size: rg.total_byte_size,
                     columns: rg.columns.length,
                     file_offset: rg.file_offset
                 })),
                 schema: {
-                    num_fields: schema.children.length,
-                    fields: schema.children.map(f => ({
+                    num_fields: state.schema.children.length,
+                    fields: state.schema.children.map(f => ({
                         name: f.element.name,
                         type: f.element.type,
                         converted_type: f.element.converted_type,
@@ -643,51 +1574,27 @@
             };
             rawMeta.textContent = JSON.stringify(metadataDisplay, null, 2);
         }
-        
-        window.showMetaTab = function(tab) {
-            // Update tab buttons
-            document.querySelectorAll('.meta-tab').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.target.classList.add('active');
-            
-            // Update content
-            document.querySelectorAll('.meta-content').forEach(content => {
-                content.classList.add('hidden');
-            });
-            
-            const tabMap = {
-                'general': 'metaGeneral',
-                'columns': 'metaColumns',
-                'rowgroups': 'metaRowgroups',
-                'raw': 'metaRaw'
-            };
-            
-            document.getElementById(tabMap[tab]).classList.remove('hidden');
-        }
-        
+
         function displayData() {
             const table = document.getElementById('dataTable');
-            const start = currentPage * pageSize;
-            const end = Math.min(start + pageSize, data.length);
-            const pageData = data.slice(start, end);
-            
-            // Update stats
-            document.getElementById('totalRows').textContent = data.length.toLocaleString();
-            document.getElementById('totalCols').textContent = Object.keys(data[0] || {}).length;
+            const start = state.currentPage * state.pageSize;
+            const end = Math.min(start + state.pageSize, state.filteredData.length);
+            const pageData = state.filteredData.slice(start, end);
             
             if (pageData.length === 0) {
-                table.innerHTML = '<tr><td style="text-align: center; padding: 40px;">No data available</td></tr>';
+                table.innerHTML = '<tr><td colspan="100%" style="text-align: center; padding: 40px;">No data available</td></tr>';
+                updatePagination();
                 return;
             }
             
             const columns = Object.keys(pageData[0]);
             
-            // Build header with row numbers
+            // Build header with sortable columns
             let html = '<thead><tr>';
             html += '<th class="row-number">#</th>';
             columns.forEach(col => {
-                html += `<th title="${col}">${col}</th>`;
+                const sortClass = state.sortColumn === col ? `sorted-${state.sortDirection}` : '';
+                html += `<th class="sortable ${sortClass}" onclick="sortColumn('${col}')" title="Click to sort by ${col}">${col}</th>`;
             });
             html += '</tr></thead><tbody>';
             
@@ -698,24 +1605,29 @@
                 columns.forEach(col => {
                     let value = row[col];
                     let cellClass = '';
+                    let displayValue = value;
                     
                     if (value === null || value === undefined) {
-                        value = 'null';
+                        displayValue = 'null';
                         cellClass = 'cell-null';
                     } else if (typeof value === 'boolean') {
                         cellClass = 'cell-boolean';
-                        value = value ? '✓ true' : '✗ false';
+                        displayValue = value ? '✓ true' : '✗ false';
                     } else if (typeof value === 'number') {
                         cellClass = 'cell-number';
-                        value = value.toLocaleString();
+                        displayValue = value.toLocaleString();
                     } else if (typeof value === 'object') {
                         cellClass = 'cell-object';
-                        value = JSON.stringify(value);
+                        displayValue = JSON.stringify(value);
                     } else {
                         cellClass = 'cell-string';
+                        // Truncate long strings
+                        if (String(value).length > 100) {
+                            displayValue = String(value).substring(0, 100) + '...';
+                        }
                     }
                     
-                    html += `<td class="${cellClass}" title="${value}">${value}</td>`;
+                    html += `<td class="${cellClass}" title="${escapeHtml(String(value))}">${escapeHtml(String(displayValue))}</td>`;
                 });
                 html += '</tr>';
             });
@@ -723,50 +1635,214 @@
             html += '</tbody>';
             table.innerHTML = html;
             
-            // Update pagination with better formatting
-            const totalPages = Math.ceil(data.length / pageSize);
-            document.getElementById('pageInfo').innerHTML = 
-                `Showing <span>${start + 1}</span> - <span>${end}</span> of <span>${data.length.toLocaleString()}</span> rows (Page <span>${currentPage + 1}</span> of <span>${totalPages}</span>)`;
-            document.getElementById('prevBtn').disabled = currentPage === 0;
-            document.getElementById('nextBtn').disabled = end >= data.length;
+            updatePagination();
         }
-        
-        window.changePage = function(direction) {
-            const newPage = currentPage + direction;
-            const maxPage = Math.ceil(data.length / pageSize) - 1;
+
+        function updatePagination() {
+            const totalPages = Math.ceil(state.filteredData.length / state.pageSize);
+            const start = state.currentPage * state.pageSize + 1;
+            const end = Math.min((state.currentPage + 1) * state.pageSize, state.filteredData.length);
             
-            if (newPage >= 0 && newPage <= maxPage) {
-                currentPage = newPage;
+            document.getElementById('pageInfo').innerHTML = 
+                `Showing <span>${start.toLocaleString()}</span> - <span>${end.toLocaleString()}</span> of <span>${state.filteredData.length.toLocaleString()}</span> rows`;
+            
+            document.getElementById('totalPagesText').textContent = `of ${totalPages}`;
+            document.getElementById('pageJumpInput').value = state.currentPage + 1;
+            document.getElementById('pageJumpInput').max = totalPages;
+            
+            document.getElementById('firstBtn').disabled = state.currentPage === 0;
+            document.getElementById('prevBtn').disabled = state.currentPage === 0;
+            document.getElementById('nextBtn').disabled = state.currentPage >= totalPages - 1;
+            document.getElementById('lastBtn').disabled = state.currentPage >= totalPages - 1;
+        }
+
+        function handleSearch() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            state.searchTerm = searchTerm;
+            
+            if (!searchTerm) {
+                state.filteredData = [...state.data];
+            } else {
+                state.filteredData = state.data.filter(row => {
+                    return Object.values(row).some(value => 
+                        String(value).toLowerCase().includes(searchTerm)
+                    );
+                });
+            }
+            
+            state.currentPage = 0;
+            displayData();
+        }
+
+        function sortColumn(columnName) {
+            if (state.sortColumn === columnName) {
+                state.sortDirection = state.sortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                state.sortColumn = columnName;
+                state.sortDirection = 'asc';
+            }
+            
+            state.filteredData.sort((a, b) => {
+                let aVal = a[columnName];
+                let bVal = b[columnName];
+                
+                // Handle null values
+                if (aVal === null || aVal === undefined) aVal = '';
+                if (bVal === null || bVal === undefined) bVal = '';
+                
+                // Convert to comparable types
+                if (typeof aVal === 'number' && typeof bVal === 'number') {
+                    return state.sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
+                }
+                
+                // String comparison
+                aVal = String(aVal).toLowerCase();
+                bVal = String(bVal).toLowerCase();
+                
+                if (state.sortDirection === 'asc') {
+                    return aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
+                } else {
+                    return aVal > bVal ? -1 : aVal < bVal ? 1 : 0;
+                }
+            });
+            
+            displayData();
+        }
+
+        // Event handlers
+        window.showMetaTab = function(tab) {
+            document.querySelectorAll('.tab').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(`meta${tab.charAt(0).toUpperCase() + tab.slice(1)}`).classList.add('active');
+        }
+
+        window.changePage = function(direction) {
+            const totalPages = Math.ceil(state.filteredData.length / state.pageSize);
+            const newPage = state.currentPage + direction;
+            
+            if (newPage >= 0 && newPage < totalPages) {
+                state.currentPage = newPage;
                 displayData();
             }
         }
-        
-        window.exportData = function(format) {
-            if (data.length === 0) return;
-            
-            if (format === 'csv') {
-                const columns = Object.keys(data[0]);
-                let csv = columns.join(',') + '\n';
-                
-                data.forEach(row => {
-                    const values = columns.map(col => {
-                        const val = row[col];
-                        if (val === null || val === undefined) return '';
-                        if (typeof val === 'string' && val.includes(',')) {
-                            return `"${val.replace(/"/g, '""')}"`;
-                        }
-                        return val;
-                    });
-                    csv += values.join(',') + '\n';
-                });
-                
-                download(csv, 'export.csv', 'text/csv');
-            } else if (format === 'json') {
-                const json = JSON.stringify(data, null, 2);
-                download(json, 'export.json', 'application/json');
+
+        window.goToPage = function(page) {
+            const totalPages = Math.ceil(state.filteredData.length / state.pageSize);
+            if (page >= 0 && page < totalPages) {
+                state.currentPage = page;
+                displayData();
             }
         }
-        
+
+        window.goToLastPage = function() {
+            const totalPages = Math.ceil(state.filteredData.length / state.pageSize);
+            state.currentPage = Math.max(0, totalPages - 1);
+            displayData();
+        }
+
+        window.handlePageJump = function(event) {
+            if (event.key === 'Enter') {
+                const page = parseInt(event.target.value) - 1;
+                goToPage(page);
+            }
+        }
+
+        window.changePageSize = function() {
+            const newSize = parseInt(document.getElementById('pageSizeSelect').value);
+            state.pageSize = newSize;
+            state.currentPage = 0;
+            displayData();
+        }
+
+        window.refreshData = function() {
+            displayData();
+        }
+
+        window.resetViewer = function() {
+            state = {
+                data: [],
+                filteredData: [],
+                metadata: null,
+                schema: null,
+                currentPage: 0,
+                pageSize: 50,
+                searchTerm: '',
+                sortColumn: null,
+                sortDirection: 'asc',
+                processingStartTime: null,
+                selectedFile: null
+            };
+            
+            document.getElementById('uploadSection').classList.remove('hidden');
+            document.getElementById('loadingSection').classList.add('hidden');
+            document.getElementById('errorSection').classList.add('hidden');
+            document.getElementById('successSection').classList.add('hidden');
+            document.getElementById('resultsSection').classList.add('hidden');
+            document.getElementById('fileInput').value = '';
+            document.getElementById('searchInput').value = '';
+        }
+
+        window.exportData = function(format) {
+            if (state.data.length === 0) return;
+            
+            let dataToExport, filename;
+            
+            switch (format) {
+                case 'csv':
+                    dataToExport = convertToCSV(state.data);
+                    filename = `${state.selectedFile.name.replace('.parquet', '')}.csv`;
+                    download(dataToExport, filename, 'text/csv');
+                    break;
+                    
+                case 'json':
+                    dataToExport = JSON.stringify(state.data, null, 2);
+                    filename = `${state.selectedFile.name.replace('.parquet', '')}.json`;
+                    download(dataToExport, filename, 'application/json');
+                    break;
+                    
+                case 'filtered-csv':
+                    dataToExport = convertToCSV(state.filteredData);
+                    filename = `${state.selectedFile.name.replace('.parquet', '')}_filtered.csv`;
+                    download(dataToExport, filename, 'text/csv');
+                    break;
+                    
+                case 'schema':
+                    const schemaData = state.schema.children.map(col => ({
+                        name: col.element.name,
+                        type: col.element.type,
+                        converted_type: col.element.converted_type,
+                        repetition_type: col.element.repetition_type
+                    }));
+                    dataToExport = JSON.stringify(schemaData, null, 2);
+                    filename = `${state.selectedFile.name.replace('.parquet', '')}_schema.json`;
+                    download(dataToExport, filename, 'application/json');
+                    break;
+            }
+        }
+
+        function convertToCSV(data) {
+            if (data.length === 0) return '';
+            
+            const columns = Object.keys(data[0]);
+            let csv = columns.join(',') + '\n';
+            
+            data.forEach(row => {
+                const values = columns.map(col => {
+                    const val = row[col];
+                    if (val === null || val === undefined) return '';
+                    if (typeof val === 'string' && (val.includes(',') || val.includes('"'))) {
+                        return `"${val.replace(/"/g, '""')}"`;
+                    }
+                    return val;
+                });
+                csv += values.join(',') + '\n';
+            });
+            
+            return csv;
+        }
+
         function download(content, filename, type) {
             const blob = new Blob([content], { type });
             const url = URL.createObjectURL(blob);
@@ -775,17 +1851,40 @@
             a.download = filename;
             a.click();
             URL.revokeObjectURL(url);
+            
+            showSuccess(`Exported ${filename} successfully`);
         }
-        
+
+        function toggleKeyboardHelp() {
+            const help = document.getElementById('keyboardHelp');
+            help.classList.toggle('show');
+        }
+
+        // Utility functions
         function formatSize(bytes) {
-            // Handle BigInt values
-            if (typeof bytes === 'bigint') {
-                bytes = Number(bytes);
-            }
-            const sizes = ['B', 'KB', 'MB', 'GB'];
+            if (typeof bytes === 'bigint') bytes = Number(bytes);
+            const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
             if (bytes === 0) return '0 B';
             const i = Math.floor(Math.log(bytes) / Math.log(1024));
             return Math.round(bytes / Math.pow(1024, i) * 100) / 100 + ' ' + sizes[i];
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
         }
     </script>
 </body>
