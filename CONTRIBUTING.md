@@ -164,11 +164,12 @@ Any additional information
 We're particularly interested in contributions for:
 
 - **Performance optimizations** for large files
-- **New export formats** (Excel, TSV, etc.)
+- **Parquet file writing** capabilities (real Parquet export, not CSV)
 - **Advanced filtering** and search capabilities
+- **Enhanced data editing** features (data validation, type checking)
 - **Column statistics** and data profiling
 - **Schema comparison** tools
-- **Data validation** features
+- **Data visualization** features (charts, graphs)
 - **Accessibility improvements**
 - **Mobile experience** enhancements
 

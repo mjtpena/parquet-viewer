@@ -2,7 +2,7 @@
 
 A powerful, modern, browser-based Parquet file viewer that runs entirely in your browser with zero uploads required. Analyze and explore your Parquet files privately and securely with advanced features and beautiful UI.
 
-![Parquet Viewer Screenshot](https://via.placeholder.com/800x400/667eea/ffffff?text=Parquet+Viewer+Screenshot)
+![Parquet Viewer Screenshot](https://via.placeholder.com/800x400/1e1e1e/ffffff?text=🗃️+Parquet+Viewer+-+Modern+Browser-based+Analytics)
 
 ## 🌟 Features
 
@@ -12,25 +12,30 @@ A powerful, modern, browser-based Parquet file viewer that runs entirely in your
 - **Local Processing**: All parsing and analysis happens on your device
 - **No Data Storage**: Files are not saved or cached anywhere
 
-### 📊 Data Analysis
+### 📊 Data Analysis & Editing
 - **Advanced Schema Inspection**: View column types, encodings, compression, and metadata
 - **Smart Data Preview**: Browse through your data with intelligent pagination
+- **In-Place Data Editing**: Click any cell to edit values with real-time modification tracking
 - **Real-time Search**: Search across all data with instant filtering
 - **Column Sorting**: Click any column header to sort data
 - **Data Statistics**: Automatic calculation of null counts, unique values, and data types
 - **Performance Metrics**: Track processing speed and memory usage
+- **View/Edit Mode Toggle**: Switch between viewing and editing modes
 
 ### 🎨 Modern Interface
 - **Drag & Drop Support**: Simply drag Parquet files onto the interface
+- **VSCode-Like Themes**: Beautiful dark and light themes with proper contrast
 - **Responsive Design**: Beautiful interface that works on all devices
-- **Tabbed Metadata View**: Organized display of schema, statistics, and raw metadata
+- **Collapsible Tree Views**: Organized metadata display with expandable sections
 - **Enhanced Data Tables**: Sticky headers, row numbers, and type-specific cell styling
+- **In-Place Editing**: Click-to-edit data cells with modification tracking
 - **Progress Indicators**: Real-time feedback during file processing
 - **Keyboard Shortcuts**: Efficient navigation with keyboard commands
 
-### 📤 Export Options
-- **Multiple Formats**: Export as CSV, JSON, or schema definitions
-- **Filtered Exports**: Export only searched/filtered data
+### 📤 Export & Save Options
+- **Export Modified CSV**: Save your data modifications as CSV files
+- **Export Original Data**: Export as CSV or JSON formats
+- **Schema Export**: Download schema definitions
 - **Smart Filename Generation**: Automatic naming based on source file
 - **Large File Support**: Handle files up to 500MB efficiently
 
@@ -75,9 +80,10 @@ A powerful, modern, browser-based Parquet file viewer that runs entirely in your
 
 1. **📂 Select or Drop** a `.parquet` file (up to 500MB)
 2. **⚡ Automatic Processing** with real-time progress updates
-3. **🔍 Explore Schema** - inspect column types, encodings, and metadata
-4. **📊 Browse Data** - search, sort, and navigate through your data
-5. **📤 Export Results** - download in CSV, JSON, or schema format
+3. **🔍 Explore Schema** - inspect column types, encodings, and metadata in collapsible tree views
+4. **📊 Browse & Edit Data** - search, sort, navigate, and edit data in-place
+5. **💾 Export Modified Data** - download your modifications as CSV files
+6. **📤 Export Original Data** - convert to CSV, JSON, or schema formats
 
 ## 🛠️ Technical Details
 
@@ -128,7 +134,8 @@ A powerful, modern, browser-based Parquet file viewer that runs entirely in your
 
 - **`Ctrl+F`**: Focus search box
 - **`←` / `→`**: Navigate between pages
-- **`Ctrl+E`**: Export as CSV
+- **`Ctrl+S`**: Export modified data as CSV
+- **`Ctrl+E`**: Export original data as CSV
 - **`Esc`**: Reset view/clear search
 - **`?`**: Toggle keyboard shortcuts help
 
