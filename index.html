@@ -979,6 +979,26 @@
         .mode-btn.active {
             background: var(--vscode-accent);
             color: var(--vscode-text-active);
+            pointer-events: none;
+            cursor: default;
+        }
+
+        .help-icon {
+            background: transparent;
+            border: none;
+            color: var(--vscode-text-muted);
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .help-icon:hover {
+            background: var(--vscode-hover);
+            color: var(--vscode-text);
         }
 
         .theme-toggle {
@@ -1364,13 +1384,12 @@
                                     <option value="100">100</option>
                                 </select>
                                 
-                                <button class="page-btn" onclick="refreshData()">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <polyline points="23 4 23 10 17 10"></polyline>
-                                        <polyline points="1 20 1 14 7 14"></polyline>
-                                        <path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 003.51 15"></path>
+                                <button class="help-icon" onclick="showModeHelp()" title="View/Edit mode information">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"></path>
+                                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
                                     </svg>
-                                    Refresh
                                 </button>
                             </div>
                         </div>
@@ -1475,26 +1494,24 @@
         }
 
         window.setMode = function(mode) {
+            if (state.currentMode === mode) return; // Don't do anything if already in this mode
+            
             state.currentMode = mode;
             
             // Update button states
             document.getElementById('viewModeBtn').classList.toggle('active', mode === 'view');
             document.getElementById('editModeBtn').classList.toggle('active', mode === 'edit');
             
-            // Show/hide edit features
-            const cells = document.querySelectorAll('.cell-editable');
-            cells.forEach(cell => {
-                if (mode === 'edit') {
-                    cell.style.cursor = 'pointer';
-                    cell.setAttribute('onclick', 'editCell(this)');
-                } else {
-                    cell.style.cursor = 'default';
-                    cell.removeAttribute('onclick');
-                }
-            });
+            // Refresh data display to apply mode changes
+            displayData();
+        }
+
+        window.showModeHelp = function() {
+            const helpText = state.currentMode === 'edit' 
+                ? 'Edit Mode: Click any data cell to modify values. Changes are local-only for exploration.'
+                : 'View Mode: Browse data in read-only format. Switch to Edit mode to modify values.';
             
-            // Update toast message
-            showToast(`Switched to ${mode} mode`, 'info', 1500);
+            showToast(helpText, 'info', 4000);
         }
 
         function setupEventListeners() {
@@ -1714,6 +1731,11 @@
             displayFileInfo();
             displayMetadata();
             displayData();
+            
+            // Initialize mode toggle buttons
+            document.getElementById('viewModeBtn').classList.add('active');
+            document.getElementById('editModeBtn').classList.remove('active');
+            state.currentMode = 'view';
             
             // Show performance info
             displayPerformanceInfo(processingTime);
@@ -2174,9 +2196,6 @@
             displayData();
         }
 
-        window.refreshData = function() {
-            displayData();
-        }
 
         window.uploadNewFile = function() {
             resetViewer();
@@ -2284,7 +2303,8 @@
                 processingStartTime: null,
                 selectedFile: null,
                 modifiedCells: new Set(),
-                isEditing: false
+                isEditing: false,
+                currentMode: 'view'
             };
             
             // Show header again when returning to upload screen
