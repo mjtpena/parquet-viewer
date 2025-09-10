@@ -1406,6 +1406,13 @@
                                         <line x1="12" y1="17" x2="12.01" y2="17"></line>
                                     </svg>
                                 </button>
+                                
+                                <button class="help-icon" onclick="showKeyboardHelp()" title="Keyboard shortcuts: ? help • Ctrl+F search • ←→ navigate • Ctrl+E export • Esc reset">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                                        <path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M9 16h6"></path>
+                                    </svg>
+                                </button>
                             </div>
                         </div>
                         
@@ -1430,15 +1437,6 @@
         </div>
     </div>
 
-    <!-- Keyboard Shortcuts Help -->
-    <div id="keyboardHelp" class="keyboard-shortcuts">
-        <strong>Keyboard Shortcuts</strong><br>
-        <kbd>?</kbd> Toggle this help<br>
-        <kbd>Ctrl+F</kbd> Focus search<br>
-        <kbd>←→</kbd> Navigate pages<br>
-        <kbd>Ctrl+E</kbd> Export CSV<br>
-        <kbd>Esc</kbd> Reset view
-    </div>
 
     <script type="module">
         import { parquetMetadata, parquetRead, parquetSchema } from 'https://cdn.jsdelivr.net/npm/hyparquet@1.16.0/+esm';
@@ -1529,6 +1527,11 @@
             showToast(helpText, 'info', 4000);
         }
 
+        window.showKeyboardHelp = function() {
+            const helpText = 'Keyboard Shortcuts:\n• ? - Show this help\n• Ctrl+F - Focus search\n• ←→ - Navigate pages\n• Ctrl+E - Export CSV\n• Esc - Reset view';
+            showToast(helpText.replace(/\n/g, '<br>'), 'info', 6000);
+        }
+
         function setupEventListeners() {
             const uploadArea = document.getElementById('uploadSection');
             const fileInput = document.getElementById('fileInput');
@@ -1569,9 +1572,9 @@
                 else if (e.key === 'Escape') {
                     resetViewer();
                 }
-                // ? - Toggle help
+                // ? - Show keyboard help
                 else if (e.key === '?') {
-                    toggleKeyboardHelp();
+                    showKeyboardHelp();
                 }
             });
         }
@@ -2415,10 +2418,6 @@
             showToast(`Exported ${filename} successfully`);
         }
 
-        function toggleKeyboardHelp() {
-            const help = document.getElementById('keyboardHelp');
-            help.classList.toggle('show');
-        }
 
         // Utility functions
         function formatSize(bytes) {
