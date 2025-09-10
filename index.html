@@ -1563,32 +1563,24 @@
                         </div>
                     </div>
 
-                    <!-- File Actions -->
+                    <!-- Export Modified Data -->
                     <div class="compact-section">
                         <h3>
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path>
-                                <polyline points="7 10 12 15 17 10"></polyline>
-                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
                             </svg>
-                            Download
+                            Modified Data
                         </h3>
                         <div style="display: flex; flex-direction: column; gap: 4px;">
-                            <button class="page-btn" onclick="downloadModified()" style="justify-content: center; display: flex; align-items: center; gap: 4px; font-size: 0.75rem; padding: 4px 8px; display: none;" id="saveParquetBtn">
+                            <button class="page-btn" onclick="exportModifiedData()" style="justify-content: center; display: flex; align-items: center; gap: 4px; font-size: 0.75rem; padding: 4px 8px; display: none;" id="saveParquetBtn">
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path>
-                                    <polyline points="7 10 12 15 17 10"></polyline>
-                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path>
+                                    <path d="M14 2v6h6"></path>
+                                    <path d="M16 13H8"></path>
+                                    <path d="M16 17H8"></path>
+                                    <path d="M10 9H8"></path>
                                 </svg>
-                                Download Modified
-                            </button>
-                            <button class="page-btn" onclick="downloadCopy()" style="justify-content: center; display: flex; align-items: center; gap: 4px; font-size: 0.75rem; padding: 4px 8px;">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path>
-                                    <polyline points="7 10 12 15 17 10"></polyline>
-                                    <line x1="12" y1="15" x2="12" y2="3"></line>
-                                </svg>
-                                Download Copy
+                                Export Modified CSV
                             </button>
                         </div>
                     </div>
@@ -1818,7 +1810,7 @@
         }
 
         window.showKeyboardHelp = function() {
-            const helpText = 'Keyboard Shortcuts:\n• ? - Show this help\n• Ctrl+F - Focus search\n• ←→ - Navigate pages\n• Ctrl+S - Download Modified\n• Ctrl+E - Export CSV\n• Esc - Reset view';
+            const helpText = 'Keyboard Shortcuts:\n• ? - Show this help\n• Ctrl+F - Focus search\n• ←→ - Navigate pages\n• Ctrl+S - Export Modified CSV\n• Ctrl+E - Export CSV\n• Esc - Reset view';
             showToast(helpText.replace(/\n/g, '<br>'), 'info', 6000);
         }
 
@@ -1921,17 +1913,13 @@
                 else if (e.key === 'ArrowRight' && !e.target.matches('input')) {
                     changePage(1);
                 }
-                // Ctrl+S - Download Modified
+                // Ctrl+S - Export Modified Data
                 else if (e.ctrlKey && e.key === 's') {
                     e.preventDefault();
                     if (state.modifiedCells.size > 0) {
-                        try {
-                            await downloadModified();
-                        } catch (error) {
-                            // Error handling is already done in downloadModified
-                        }
+                        exportModifiedData();
                     } else {
-                        showToast('No modifications to download', 'info');
+                        showToast('No modifications to export', 'info');
                     }
                 }
                 // Ctrl+E - Export CSV
@@ -2701,101 +2689,18 @@
             document.getElementById('searchInput').value = '';
         }
 
-        window.downloadModified = async function() {
+        window.exportModifiedData = function() {
             if (state.modifiedCells.size === 0) {
-                showToast('No modifications to download', 'info');
+                showToast('No modifications to export', 'info');
                 return;
             }
             
-            try {
-                // Create a modified version with clear naming
-                const baseName = state.selectedFile.name.replace('.parquet', '');
-                const filename = `${baseName}_modified.parquet`;
-                await createParquetFile(state.filteredData, filename);
-            } catch (error) {
-                console.error('Download failed:', error);
-                showToast('Download failed. Please try again.', 'error');
-            }
-        }
-        
-        window.downloadCopy = async function() {
-            try {
-                // Always use current data (modified or not)
-                const baseName = state.selectedFile.name.replace('.parquet', '');
-                const timestamp = new Date().toISOString().slice(0, 19).replace(/[:-]/g, '');
-                const filename = `${baseName}_copy_${timestamp}.parquet`;
-                
-                const dataToSave = state.modifiedCells.size > 0 ? state.filteredData : state.data;
-                await createParquetFile(dataToSave, filename);
-            } catch (error) {
-                console.error('Download failed:', error);
-                showToast('Download failed. Please try again.', 'error');
-            }
-        }
-        
-        async function createParquetFile(data, filename) {
-            showToast('Creating Parquet file...', 'info');
-            
-            try {
-                // Use hyparquet-writer to create Parquet file directly from JavaScript data
-                const parquetBytes = await writeParquetFile(data);
-                
-                // Download the file
-                const blob = new Blob([parquetBytes], { type: 'application/octet-stream' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = filename;
-                a.click();
-                URL.revokeObjectURL(url);
-                
-                showToast(`Successfully downloaded ${filename}`, 'success');
-                
-            } catch (error) {
-                console.error('Error creating Parquet file:', error);
-                showToast(`Failed to create Parquet file: ${error.message}`, 'error', 5000);
-                throw error; // Re-throw to prevent silent failures
-            }
-        }
-        
-        function convertBigIntValues(obj) {
-            if (obj === null || obj === undefined) return obj;
-            
-            if (typeof obj === 'bigint') {
-                return obj.toString();
-            }
-            
-            if (Array.isArray(obj)) {
-                return obj.map(convertBigIntValues);
-            }
-            
-            if (typeof obj === 'object') {
-                const converted = {};
-                for (const [key, value] of Object.entries(obj)) {
-                    converted[key] = convertBigIntValues(value);
-                }
-                return converted;
-            }
-            
-            return obj;
-        }
-
-        async function writeParquetFile(data) {
-            // Parquet writing libraries are having CDN/import issues
-            // For now, we'll export as JSON with Parquet extension to preserve data structure
-            showToast('Parquet writing currently unavailable. Downloading as JSON with .parquet extension.', 'warning', 5000);
-            
-            try {
-                // Convert BigInt values to strings to avoid serialization errors
-                const convertedData = convertBigIntValues(data);
-                
-                // Export as JSON but preserve the .parquet filename
-                const jsonData = JSON.stringify(convertedData, null, 2);
-                return new TextEncoder().encode(jsonData);
-            } catch (error) {
-                console.error('JSON serialization error:', error);
-                throw new Error(`Failed to serialize data: ${error.message}`);
-            }
+            // Export modifications as CSV (honest about what we can do)
+            const baseName = state.selectedFile.name.replace('.parquet', '');
+            const filename = `${baseName}_modified.csv`;
+            const csvData = convertToCSV(state.filteredData);
+            download(csvData, filename, 'text/csv');
+            showToast(`Exported ${state.modifiedCells.size} modifications to CSV`, 'success');
         }
 
         window.exportData = function(format) {
