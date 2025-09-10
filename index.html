@@ -258,6 +258,12 @@
             transition: all 0.3s ease;
         }
 
+        .data-preview-section {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.08));
+            border: 2px solid rgba(99, 102, 241, 0.3);
+            box-shadow: 0 8px 32px rgba(99, 102, 241, 0.1);
+        }
+
         .section:hover {
             transform: translateY(-2px);
             box-shadow: var(--shadow-md);
@@ -270,6 +276,27 @@
             align-items: center;
             gap: 10px;
             font-weight: 600;
+        }
+
+        .data-preview-section h2 {
+            font-size: 1.6rem;
+            color: var(--accent-color);
+        }
+
+        .section-badge {
+            background: var(--accent-color);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .section-badge.secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--text-muted);
         }
 
         .section-controls {
@@ -593,6 +620,14 @@
             max-height: 600px;
             border-radius: 10px;
             border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .data-preview-table {
+            max-height: 1000px !important;
+        }
+
+        .metadata-section .table-wrapper {
+            max-height: 400px;
         }
 
         .table-controls {
@@ -957,14 +992,75 @@
                 <div id="performanceInfo" class="performance-info hidden"></div>
             </div>
 
+            <!-- Data Preview -->
+            <div class="section data-preview-section">
+                <h2>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 3h18v18H3zM21 9H3M9 21V9"></path>
+                    </svg>
+                    Data Preview
+                    <span class="section-badge">Primary View</span>
+                </h2>
+                
+                <div class="table-controls">
+                    <div class="search-box">
+                        <input type="text" id="searchInput" class="search-input" placeholder="Search data...">
+                        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="M21 21l-4.35-4.35"></path>
+                        </svg>
+                    </div>
+                    
+                    <div class="page-size-selector">
+                        <label for="pageSizeSelect">Rows per page:</label>
+                        <select id="pageSizeSelect" onchange="changePageSize()">
+                            <option value="25">25</option>
+                            <option value="50" selected>50</option>
+                            <option value="100">100</option>
+                            <option value="200">200</option>
+                            <option value="500">500</option>
+                        </select>
+                    </div>
+                    
+                    <button class="btn btn-small" onclick="refreshData()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="23 4 23 10 17 10"></polyline>
+                            <polyline points="1 20 1 14 7 14"></polyline>
+                            <path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 003.51 15"></path>
+                        </svg>
+                        Refresh
+                    </button>
+                </div>
+                
+                <div class="table-wrapper data-preview-table">
+                    <table id="dataTable"></table>
+                </div>
+                
+                <div class="pagination">
+                    <div class="page-info" id="pageInfo"></div>
+                    <div class="page-buttons">
+                        <button id="firstBtn" class="page-btn" onclick="goToPage(0)">First</button>
+                        <button id="prevBtn" class="page-btn" onclick="changePage(-1)">Previous</button>
+                        <div class="page-jump">
+                            <span>Page</span>
+                            <input type="number" id="pageJumpInput" min="1" onkeypress="handlePageJump(event)">
+                            <span id="totalPagesText"></span>
+                        </div>
+                        <button id="nextBtn" class="page-btn" onclick="changePage(1)">Next</button>
+                        <button id="lastBtn" class="page-btn" onclick="goToLastPage()">Last</button>
+                    </div>
+                </div>
+            </div>
+
             <!-- Advanced Metadata -->
-            <div class="section">
+            <div class="section metadata-section">
                 <h2>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="12" cy="12" r="3"></circle>
                         <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"></path>
                     </svg>
                     Metadata & Statistics
+                    <span class="section-badge secondary">Details</span>
                 </h2>
                 <div class="tabs">
                     <button class="tab active" onclick="showMetaTab('general')">General</button>
@@ -998,65 +1094,6 @@
                 
                 <div id="metaRaw" class="tab-content">
                     <div class="metadata-raw" id="rawMetadata"></div>
-                </div>
-            </div>
-
-            <!-- Data Preview -->
-            <div class="section">
-                <h2>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M3 3h18v18H3zM21 9H3M9 21V9"></path>
-                    </svg>
-                    Data Preview
-                </h2>
-                
-                <div class="table-controls">
-                    <div class="search-box">
-                        <input type="text" id="searchInput" class="search-input" placeholder="Search data...">
-                        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="11" cy="11" r="8"></circle>
-                            <path d="M21 21l-4.35-4.35"></path>
-                        </svg>
-                    </div>
-                    
-                    <div class="page-size-selector">
-                        <label for="pageSizeSelect">Rows per page:</label>
-                        <select id="pageSizeSelect" onchange="changePageSize()">
-                            <option value="25">25</option>
-                            <option value="50" selected>50</option>
-                            <option value="100">100</option>
-                            <option value="200">200</option>
-                            <option value="500">500</option>
-                        </select>
-                    </div>
-                    
-                    <button class="btn btn-small" onclick="refreshData()">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="23 4 23 10 17 10"></polyline>
-                            <polyline points="1 20 1 14 7 14"></polyline>
-                            <path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 003.51 15"></path>
-                        </svg>
-                        Refresh
-                    </button>
-                </div>
-                
-                <div class="table-wrapper">
-                    <table id="dataTable"></table>
-                </div>
-                
-                <div class="pagination">
-                    <div class="page-info" id="pageInfo"></div>
-                    <div class="page-buttons">
-                        <button id="firstBtn" class="page-btn" onclick="goToPage(0)">First</button>
-                        <button id="prevBtn" class="page-btn" onclick="changePage(-1)">Previous</button>
-                        <div class="page-jump">
-                            <span>Page</span>
-                            <input type="number" id="pageJumpInput" min="1" onkeypress="handlePageJump(event)">
-                            <span id="totalPagesText"></span>
-                        </div>
-                        <button id="nextBtn" class="page-btn" onclick="changePage(1)">Next</button>
-                        <button id="lastBtn" class="page-btn" onclick="goToLastPage()">Last</button>
-                    </div>
                 </div>
             </div>
 
@@ -1231,13 +1268,15 @@
                 updateProgress(50, 'Loading data...');
                 
                 // Read data with progress tracking
-                state.data = [];
-                await parquetRead({
-                    file: buffer,
-                    onComplete: (rows) => {
-                        state.data = rows;
-                        updateProgress(90, 'Finalizing...');
-                    }
+                await new Promise((resolve) => {
+                    parquetRead({
+                        file: buffer,
+                        onComplete: (rows) => {
+                            state.data = rows;
+                            updateProgress(90, 'Finalizing...');
+                            resolve();
+                        }
+                    });
                 });
 
                 updateProgress(100, 'Complete!');
