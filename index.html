@@ -34,8 +34,8 @@
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
             min-height: 100vh;
             color: var(--text-light);
-            padding: 20px;
-            line-height: 1.6;
+            padding: 15px;
+            line-height: 1.5;
         }
         
         .container {
@@ -45,12 +45,12 @@
         
         header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
         
         h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
+            font-size: 2rem;
+            margin-bottom: 8px;
             font-weight: 700;
             background: linear-gradient(45deg, #fff, #e0e7ff);
             -webkit-background-clip: text;
@@ -59,16 +59,16 @@
         }
         
         .subtitle {
-            font-size: 1.1rem;
+            font-size: 1rem;
             opacity: 0.9;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
         }
         
         .privacy-badge {
             display: inline-flex;
-            gap: 20px;
-            margin-top: 10px;
-            font-size: 0.9rem;
+            gap: 15px;
+            margin-top: 8px;
+            font-size: 0.8rem;
             opacity: 0.8;
             flex-wrap: wrap;
             justify-content: center;
@@ -250,9 +250,9 @@
         .section {
             background: var(--bg-glass);
             backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 20px;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
             border: 1px solid var(--border-light);
             box-shadow: var(--shadow-sm);
             transition: all 0.3s ease;
@@ -262,16 +262,17 @@
             background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.08));
             border: 2px solid rgba(99, 102, 241, 0.3);
             box-shadow: 0 8px 32px rgba(99, 102, 241, 0.1);
+            padding: 25px 20px;
         }
 
         .section:hover {
-            transform: translateY(-2px);
+            transform: translateY(-1px);
             box-shadow: var(--shadow-md);
         }
         
         .section h2 {
-            font-size: 1.4rem;
-            margin-bottom: 20px;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
             display: flex;
             align-items: center;
             gap: 10px;
@@ -279,7 +280,7 @@
         }
 
         .data-preview-section h2 {
-            font-size: 1.6rem;
+            font-size: 1.5rem;
             color: var(--accent-color);
         }
 
@@ -424,15 +425,15 @@
         
         .info-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-top: 10px;
         }
         
         .info-card {
             background: rgba(255, 255, 255, 0.1);
-            padding: 20px;
-            border-radius: 12px;
+            padding: 15px;
+            border-radius: 10px;
             border: 1px solid rgba(255, 255, 255, 0.1);
             transition: all 0.3s ease;
         }
@@ -443,43 +444,43 @@
         }
         
         .info-label {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             opacity: 0.8;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             font-weight: 500;
         }
         
         .info-value {
-            font-size: 1.4rem;
+            font-size: 1.2rem;
             font-weight: 700;
             word-break: break-all;
         }
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px;
+            margin-top: 10px;
         }
 
         .stat-card {
             background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
-            padding: 15px;
-            border-radius: 10px;
+            padding: 12px;
+            border-radius: 8px;
             border: 1px solid rgba(255, 255, 255, 0.1);
             text-align: center;
         }
 
         .stat-number {
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             font-weight: 700;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
         }
 
         .stat-label {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             opacity: 0.8;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -496,10 +497,10 @@
         
         th {
             background: rgba(255, 255, 255, 0.15);
-            padding: 15px 12px;
+            padding: 12px 10px;
             text-align: left;
             font-weight: 600;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -529,7 +530,7 @@
         }
         
         td {
-            padding: 12px;
+            padding: 10px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             transition: background 0.2s ease;
         }
@@ -616,25 +617,25 @@
         
         .table-wrapper {
             overflow: auto;
-            margin-top: 15px;
+            margin-top: 10px;
             max-height: 600px;
             border-radius: 10px;
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .data-preview-table {
-            max-height: 1000px !important;
+            max-height: 70vh !important;
         }
 
         .metadata-section .table-wrapper {
-            max-height: 400px;
+            max-height: 300px;
         }
 
         .table-controls {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             gap: 15px;
             flex-wrap: wrap;
         }
@@ -658,8 +659,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: 20px;
-            padding-top: 20px;
+            margin-top: 15px;
+            padding-top: 15px;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
             flex-wrap: wrap;
             gap: 15px;
