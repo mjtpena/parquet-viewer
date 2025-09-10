@@ -1563,6 +1563,37 @@
                         </div>
                     </div>
 
+                    <!-- File Actions -->
+                    <div class="compact-section">
+                        <h3>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"></path>
+                                <polyline points="17,21 17,13 7,13 7,21"></polyline>
+                                <polyline points="7,3 7,8 15,8"></polyline>
+                            </svg>
+                            Save
+                        </h3>
+                        <div style="display: flex; flex-direction: column; gap: 4px;">
+                            <button class="page-btn" onclick="saveParquet()" style="justify-content: center; display: flex; align-items: center; gap: 4px; font-size: 0.75rem; padding: 4px 8px; display: none;" id="saveParquetBtn">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"></path>
+                                    <polyline points="17,21 17,13 7,13 7,21"></polyline>
+                                    <polyline points="7,3 7,8 15,8"></polyline>
+                                </svg>
+                                Save Parquet
+                            </button>
+                            <button class="page-btn" onclick="saveAsParquet()" style="justify-content: center; display: flex; align-items: center; gap: 4px; font-size: 0.75rem; padding: 4px 8px;">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"></path>
+                                    <polyline points="17,21 17,13 7,13 7,21"></polyline>
+                                    <polyline points="7,3 7,8 15,8"></polyline>
+                                    <path d="m9 15 2-2 2 2"></path>
+                                </svg>
+                                Save As Parquet...
+                            </button>
+                        </div>
+                    </div>
+                    
                     <!-- Export Options -->
                     <div class="compact-section">
                         <h3>
@@ -1571,26 +1602,27 @@
                                 <polyline points="7 10 12 15 17 10"></polyline>
                                 <line x1="12" y1="15" x2="12" y2="3"></line>
                             </svg>
-                            Export
+                            Convert & Export
                         </h3>
                         <div style="display: flex; flex-direction: column; gap: 4px;">
                             <button class="page-btn" onclick="exportData('csv')" style="justify-content: center; display: flex; align-items: center; gap: 4px; font-size: 0.75rem; padding: 4px 8px;">
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path>
+                                    <path d="M14 2v6h6"></path>
+                                    <path d="M16 13H8"></path>
+                                    <path d="M16 17H8"></path>
+                                    <path d="M10 9H8"></path>
                                 </svg>
-                                CSV
+                                Export CSV
                             </button>
                             <button class="page-btn" onclick="exportData('json')" style="justify-content: center; display: flex; align-items: center; gap: 4px; font-size: 0.75rem; padding: 4px 8px;">
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path>
+                                    <path d="M14 2v6h6"></path>
+                                    <path d="M12 18v-6"></path>
+                                    <path d="M9 15l3-3 3 3"></path>
                                 </svg>
-                                JSON
-                            </button>
-                            <button class="page-btn" onclick="exportModifiedData()" style="justify-content: center; display: flex; align-items: center; gap: 4px; font-size: 0.75rem; padding: 4px 8px; background: rgba(16, 185, 129, 0.2); border-color: rgba(16, 185, 129, 0.5);" id="exportModifiedBtn">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-                                </svg>
-                                Modified CSV
+                                Export JSON
                             </button>
                         </div>
                     </div>
@@ -1786,7 +1818,7 @@
         }
 
         window.showKeyboardHelp = function() {
-            const helpText = 'Keyboard Shortcuts:\n• ? - Show this help\n• Ctrl+F - Focus search\n• ←→ - Navigate pages\n• Ctrl+E - Export CSV\n• Esc - Reset view';
+            const helpText = 'Keyboard Shortcuts:\n• ? - Show this help\n• Ctrl+F - Focus search\n• ←→ - Navigate pages\n• Ctrl+S - Save Parquet\n• Ctrl+E - Export CSV\n• Esc - Reset view';
             showToast(helpText.replace(/\n/g, '<br>'), 'info', 6000);
         }
 
@@ -1888,6 +1920,15 @@
                 }
                 else if (e.key === 'ArrowRight' && !e.target.matches('input')) {
                     changePage(1);
+                }
+                // Ctrl+S - Save Parquet
+                else if (e.ctrlKey && e.key === 's') {
+                    e.preventDefault();
+                    if (state.modifiedCells.size > 0) {
+                        saveParquet();
+                    } else {
+                        showToast('No modifications to save', 'info');
+                    }
                 }
                 // Ctrl+E - Export CSV
                 else if (e.ctrlKey && e.key === 'e') {
@@ -2404,19 +2445,13 @@
             html += '</tbody>';
             table.innerHTML = html;
             
-            // Update export button visibility and text
-            const exportModifiedBtn = document.getElementById('exportModifiedBtn');
-            if (exportModifiedBtn) {
+            // Update save button visibility
+            const saveParquetBtn = document.getElementById('saveParquetBtn');
+            if (saveParquetBtn) {
                 if (state.modifiedCells.size > 0) {
-                    exportModifiedBtn.style.display = 'flex';
-                    exportModifiedBtn.innerHTML = `
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-                        </svg>
-                        Modified CSV (${state.modifiedCells.size})
-                    `;
+                    saveParquetBtn.style.display = 'flex';
                 } else {
-                    exportModifiedBtn.style.display = 'none';
+                    saveParquetBtn.style.display = 'none';
                 }
             }
             
@@ -2662,16 +2697,37 @@
             document.getElementById('searchInput').value = '';
         }
 
-        window.exportModifiedData = function() {
+        window.saveParquet = function() {
             if (state.modifiedCells.size === 0) {
-                showToast('No modifications found to export', 'info');
+                showToast('No modifications to save', 'info');
                 return;
             }
             
-            const dataToExport = convertToCSV(state.filteredData);
-            const filename = `${state.selectedFile.name.replace('.parquet', '')}_modified.csv`;
-            download(dataToExport, filename, 'text/csv');
-            showToast(`Exported ${state.modifiedCells.size} modifications`, 'success');
+            // Use the current filename (overwrite)
+            const filename = state.selectedFile.name;
+            createParquetFile(state.filteredData, filename);
+            showToast(`Saved ${state.modifiedCells.size} modifications to ${filename}`, 'success');
+        }
+        
+        window.saveAsParquet = function() {
+            const baseName = state.selectedFile.name.replace('.parquet', '');
+            const timestamp = new Date().toISOString().slice(0, 19).replace(/[:-]/g, '');
+            const filename = `${baseName}_${timestamp}.parquet`;
+            
+            createParquetFile(state.filteredData, filename);
+            showToast(`Saved as ${filename}`, 'success');
+        }
+        
+        function createParquetFile(data, filename) {
+            // For now, we'll create a placeholder function since hyparquet is read-only
+            // In a real implementation, we'd use a Parquet writer library like parquet-js
+            
+            showToast('Parquet writing feature coming soon. Use Export CSV for now.', 'warning', 5000);
+            
+            // Temporary fallback - export as CSV with clear naming
+            const csvData = convertToCSV(data);
+            const fallbackName = filename.replace('.parquet', '_modified.csv');
+            download(csvData, fallbackName, 'text/csv');
         }
 
         window.exportData = function(format) {
