@@ -296,8 +296,8 @@
         
         .results-layout {
             display: grid;
-            grid-template-columns: 300px 1fr;
-            gap: 15px;
+            grid-template-columns: 240px 1fr;
+            gap: 12px;
             height: calc(100vh - 40px);
             overflow: hidden;
             flex: 1;
@@ -306,7 +306,7 @@
         .sidebar {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
             overflow-y: auto;
         }
 
@@ -318,20 +318,22 @@
 
         .compact-section {
             background: var(--vscode-sidebar-bg);
-            border-radius: 6px;
-            padding: 12px;
+            border-radius: 4px;
+            padding: 8px;
             border: 1px solid var(--vscode-border);
             box-shadow: var(--shadow-sm);
         }
 
         .compact-section h3 {
-            font-size: 1rem;
-            margin-bottom: 10px;
+            font-size: 0.85rem;
+            margin-bottom: 6px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             font-weight: 600;
-            color: white;
+            color: var(--vscode-text-active);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
         .data-preview-section {
@@ -359,60 +361,63 @@
 
         .compact-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 8px;
-            margin-bottom: 10px;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 6px;
+            margin-bottom: 8px;
         }
 
         .compact-card {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: var(--vscode-panel-bg);
+            padding: 6px;
+            border-radius: 3px;
+            border: 1px solid var(--vscode-border);
             text-align: center;
         }
 
         .compact-card .label {
-            font-size: 0.7rem;
-            opacity: 0.8;
-            margin-bottom: 4px;
+            font-size: 0.65rem;
+            color: var(--vscode-text-muted);
+            margin-bottom: 3px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.3px;
+            font-weight: 500;
         }
 
         .compact-card .value {
-            font-size: 1rem;
-            font-weight: 700;
+            font-size: 0.8rem;
+            font-weight: 600;
             word-break: break-all;
+            color: var(--vscode-text);
         }
 
         .mini-tabs {
             display: flex;
-            gap: 3px;
-            margin-bottom: 10px;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 3px;
-            border-radius: 8px;
+            gap: 2px;
+            margin-bottom: 6px;
+            background: var(--vscode-panel-bg);
+            padding: 2px;
+            border-radius: 4px;
         }
 
         .mini-tab {
-            padding: 6px 12px;
+            padding: 4px 8px;
             background: transparent;
             border: none;
-            color: var(--text-muted);
-            border-radius: 6px;
+            color: var(--vscode-text-muted);
+            border-radius: 2px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 0.75rem;
+            transition: all 0.2s ease;
+            font-size: 0.7rem;
             font-weight: 500;
             white-space: nowrap;
             flex: 1;
             text-align: center;
+            font-family: inherit;
         }
 
         .mini-tab.active {
-            background: white;
-            color: var(--primary-color);
+            background: var(--vscode-accent);
+            color: var(--vscode-text-active);
             font-weight: 600;
         }
 
@@ -791,7 +796,17 @@
         }
 
         .metadata-section .table-wrapper {
-            max-height: 200px;
+            max-height: 120px;
+            font-size: 0.7rem;
+        }
+
+        .compact-section .table-wrapper table {
+            font-size: 0.7rem;
+        }
+
+        .compact-section .table-wrapper th,
+        .compact-section .table-wrapper td {
+            padding: 4px 6px;
         }
 
         .table-controls {
@@ -1240,26 +1255,26 @@
                     <!-- File Actions -->
                     <div class="compact-section">
                         <h3>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
                                 <path d="M8 21v-4a2 2 0 012-2h4a2 2 0 012 2v4"></path>
                             </svg>
                             Actions
                         </h3>
-                        <div style="display: flex; flex-direction: column; gap: 8px;">
-                            <button class="btn btn-secondary btn-small" onclick="uploadNewFile()" style="width: 100%; justify-content: center;">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <div style="display: flex; flex-direction: column; gap: 4px;">
+                            <button class="btn btn-secondary btn-small" onclick="uploadNewFile()" style="width: 100%; justify-content: center; font-size: 0.75rem; padding: 4px 8px;">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
                                 </svg>
-                                Upload New File
+                                Upload New
                             </button>
-                            <button class="btn btn-small" onclick="downloadCurrentFile()" style="width: 100%; justify-content: center;">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <button class="btn btn-small" onclick="downloadCurrentFile()" style="width: 100%; justify-content: center; font-size: 0.75rem; padding: 4px 8px;">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path>
                                     <polyline points="7 10 12 15 17 10"></polyline>
                                     <line x1="12" y1="15" x2="12" y2="3"></line>
                                 </svg>
-                                Download Original
+                                Download
                             </button>
                         </div>
                     </div>
@@ -1267,7 +1282,7 @@
                     <!-- File Overview -->
                     <div class="compact-section">
                         <h3>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path>
                                 <polyline points="14,2 14,8 20,8"></polyline>
                             </svg>
@@ -1280,7 +1295,7 @@
                     <!-- Metadata Tabs -->
                     <div class="compact-section">
                         <h3>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <circle cx="12" cy="12" r="3"></circle>
                                 <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"></path>
                             </svg>
@@ -1312,28 +1327,28 @@
                     <!-- Export Options -->
                     <div class="compact-section">
                         <h3>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path>
                                 <polyline points="7 10 12 15 17 10"></polyline>
                                 <line x1="12" y1="15" x2="12" y2="3"></line>
                             </svg>
                             Export
                         </h3>
-                        <div style="display: flex; flex-direction: column; gap: 8px;">
-                            <button class="page-btn" onclick="exportData('csv')" style="justify-content: center; display: flex; align-items: center; gap: 6px;">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <div style="display: flex; flex-direction: column; gap: 4px;">
+                            <button class="page-btn" onclick="exportData('csv')" style="justify-content: center; display: flex; align-items: center; gap: 4px; font-size: 0.75rem; padding: 4px 8px;">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path>
                                 </svg>
                                 CSV
                             </button>
-                            <button class="page-btn" onclick="exportData('json')" style="justify-content: center; display: flex; align-items: center; gap: 6px;">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <button class="page-btn" onclick="exportData('json')" style="justify-content: center; display: flex; align-items: center; gap: 4px; font-size: 0.75rem; padding: 4px 8px;">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path>
                                 </svg>
                                 JSON
                             </button>
-                            <button class="page-btn" onclick="exportModifiedData()" style="justify-content: center; display: flex; align-items: center; gap: 6px; background: rgba(16, 185, 129, 0.2); border-color: rgba(16, 185, 129, 0.5);" id="exportModifiedBtn">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <button class="page-btn" onclick="exportModifiedData()" style="justify-content: center; display: flex; align-items: center; gap: 4px; font-size: 0.75rem; padding: 4px 8px; background: rgba(16, 185, 129, 0.2); border-color: rgba(16, 185, 129, 0.5);" id="exportModifiedBtn">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
                                 </svg>
                                 Modified CSV
