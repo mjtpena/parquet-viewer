@@ -668,6 +668,36 @@
             font-size: 0.8rem;
         }
 
+        .cell-editable {
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .cell-editable:hover {
+            background: rgba(255, 255, 255, 0.1) !important;
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+        }
+
+        .cell-editing {
+            background: rgba(99, 102, 241, 0.2) !important;
+            box-shadow: inset 0 0 0 2px var(--accent-color);
+        }
+
+        .cell-edit-input {
+            background: transparent;
+            border: none;
+            color: inherit;
+            font: inherit;
+            width: 100%;
+            padding: 0;
+            outline: none;
+        }
+
+        .cell-modified {
+            background: rgba(16, 185, 129, 0.1) !important;
+            border-left: 3px solid var(--success-color);
+        }
+
         .type-badge {
             display: inline-block;
             padding: 3px 8px;
@@ -1185,6 +1215,12 @@
                                 </svg>
                                 JSON
                             </button>
+                            <button class="page-btn" onclick="exportModifiedData()" style="justify-content: center; display: flex; align-items: center; gap: 6px; background: rgba(16, 185, 129, 0.2); border-color: rgba(16, 185, 129, 0.5);" id="exportModifiedBtn">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                                </svg>
+                                Modified CSV
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -1273,7 +1309,9 @@
             sortColumn: null,
             sortDirection: 'asc',
             processingStartTime: null,
-            selectedFile: null
+            selectedFile: null,
+            modifiedCells: new Set(),
+            isEditing: false
         };
 
         // Initialize app
@@ -1806,13 +1844,37 @@
                         }
                     }
                     
-                    html += `<td class="${cellClass}" title="${escapeHtml(String(value))}">${escapeHtml(String(displayValue))}</td>`;
+                    const cellId = `cell-${start + index}-${col}`;
+                    const isModified = state.modifiedCells.has(cellId);
+                    const modifiedClass = isModified ? ' cell-modified' : '';
+                    html += `<td class="${cellClass} cell-editable${modifiedClass}" 
+                              title="${escapeHtml(String(value))}" 
+                              data-row="${start + index}" 
+                              data-col="${col}" 
+                              data-cell-id="${cellId}"
+                              onclick="editCell(this)">${escapeHtml(String(displayValue))}</td>`;
                 });
                 html += '</tr>';
             });
             
             html += '</tbody>';
             table.innerHTML = html;
+            
+            // Update export button visibility and text
+            const exportModifiedBtn = document.getElementById('exportModifiedBtn');
+            if (exportModifiedBtn) {
+                if (state.modifiedCells.size > 0) {
+                    exportModifiedBtn.style.display = 'flex';
+                    exportModifiedBtn.innerHTML = `
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                        </svg>
+                        Modified CSV (${state.modifiedCells.size})
+                    `;
+                } else {
+                    exportModifiedBtn.style.display = 'none';
+                }
+            }
             
             updatePagination();
         }
@@ -1957,6 +2019,80 @@
             }
         }
 
+        window.editCell = function(cell) {
+            if (state.isEditing) return; // Prevent multiple edits
+            
+            const row = parseInt(cell.dataset.row);
+            const col = cell.dataset.col;
+            const cellId = cell.dataset.cellId;
+            const originalValue = state.filteredData[row][col];
+            
+            state.isEditing = true;
+            cell.classList.add('cell-editing');
+            
+            // Create input element
+            const input = document.createElement('input');
+            input.className = 'cell-edit-input';
+            input.value = originalValue === null || originalValue === undefined ? '' : String(originalValue);
+            input.type = typeof originalValue === 'number' ? 'number' : 'text';
+            
+            // Replace cell content
+            const originalContent = cell.innerHTML;
+            cell.innerHTML = '';
+            cell.appendChild(input);
+            
+            // Focus and select
+            input.focus();
+            input.select();
+            
+            // Handle save/cancel
+            const saveEdit = () => {
+                let newValue = input.value;
+                
+                // Convert value to appropriate type
+                if (typeof originalValue === 'number') {
+                    newValue = newValue === '' ? null : parseFloat(newValue);
+                    if (isNaN(newValue)) newValue = originalValue; // Revert if invalid
+                } else if (typeof originalValue === 'boolean') {
+                    newValue = newValue.toLowerCase() === 'true';
+                } else if (newValue === '' && originalValue !== '') {
+                    newValue = null;
+                }
+                
+                // Update data
+                state.filteredData[row][col] = newValue;
+                
+                // Mark as modified if changed
+                if (newValue !== originalValue) {
+                    state.modifiedCells.add(cellId);
+                    showToast('Cell modified - changes are local only', 'info', 2000);
+                }
+                
+                // Restore cell display
+                state.isEditing = false;
+                cell.classList.remove('cell-editing');
+                displayData();
+            };
+            
+            const cancelEdit = () => {
+                state.isEditing = false;
+                cell.classList.remove('cell-editing');
+                cell.innerHTML = originalContent;
+            };
+            
+            // Event listeners
+            input.addEventListener('blur', saveEdit);
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    saveEdit();
+                } else if (e.key === 'Escape') {
+                    e.preventDefault();
+                    cancelEdit();
+                }
+            });
+        }
+
         window.resetViewer = function() {
             state = {
                 data: [],
@@ -1969,7 +2105,9 @@
                 sortColumn: null,
                 sortDirection: 'asc',
                 processingStartTime: null,
-                selectedFile: null
+                selectedFile: null,
+                modifiedCells: new Set(),
+                isEditing: false
             };
             
             // Show header again when returning to upload screen
@@ -1980,6 +2118,18 @@
             document.getElementById('resultsSection').classList.add('hidden');
             document.getElementById('fileInput').value = '';
             document.getElementById('searchInput').value = '';
+        }
+
+        window.exportModifiedData = function() {
+            if (state.modifiedCells.size === 0) {
+                showToast('No modifications found to export', 'info');
+                return;
+            }
+            
+            const dataToExport = convertToCSV(state.filteredData);
+            const filename = `${state.selectedFile.name.replace('.parquet', '')}_modified.csv`;
+            download(dataToExport, filename, 'text/csv');
+            showToast(`Exported ${state.modifiedCells.size} modifications`, 'success');
         }
 
         window.exportData = function(format) {
