@@ -1351,13 +1351,15 @@
                 updateProgress(50, 'Loading data...');
                 
                 // Read data with progress tracking
-                const rows = [];
                 await parquetRead({
                     file: buffer,
-                    onComplete: (batch) => rows.push(...batch)
+                    rowFormat: 'object',
+                    onComplete: (data) => {
+                        console.log('Data loaded:', data.length, 'rows');
+                        state.data = data;
+                        updateProgress(90, 'Finalizing...');
+                    }
                 });
-
-                state.data = rows;
                 console.log('Final data check:', state.data.length, 'rows');
                 updateProgress(100, 'Complete!');
                 
