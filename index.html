@@ -879,24 +879,72 @@
             z-index: 1000;
         }
 
-        .keyboard-shortcuts {
+        .toast-container {
             position: fixed;
-            bottom: 20px;
+            top: 20px;
             right: 20px;
-            background: rgba(0, 0, 0, 0.8);
-            padding: 15px;
-            border-radius: 10px;
-            font-size: 0.8rem;
-            max-width: 250px;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.3s ease;
-            z-index: 1000;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
 
-        .keyboard-shortcuts.show {
+        .toast {
+            background: rgba(16, 185, 129, 0.95);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 300px;
+            transform: translateX(400px);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .toast.show {
+            transform: translateX(0);
             opacity: 1;
-            transform: translateY(0);
+        }
+
+        .toast.error {
+            background: rgba(239, 68, 68, 0.95);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .toast.info {
+            background: rgba(59, 130, 246, 0.95);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .toast-icon {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+
+        .toast-content {
+            flex: 1;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 2px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .toast-close:hover {
+            background: rgba(255, 255, 255, 0.2);
         }
         
         @media (max-width: 768px) {
@@ -1035,13 +1083,8 @@
             <button class="btn btn-small" style="margin-top: 15px;" onclick="resetViewer()">Try Another File</button>
         </div>
 
-        <div id="successSection" class="success hidden">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M22 11.08V12a10 10 0 11-5.93-9.14"></path>
-                <polyline points="22,4 12,14.01 9,11.01"></polyline>
-            </svg>
-            <span id="successMessage"></span>
-        </div>
+        <!-- Toast Container -->
+        <div id="toastContainer" class="toast-container"></div>
 
         <div id="resultsSection" class="hidden">
             <div class="results-layout">
@@ -1312,11 +1355,13 @@
                 await parquetRead({
                     file: buffer,
                     onComplete: (rows) => {
+                        console.log('Data loaded:', rows.length, 'rows');
                         state.data = rows;
                         updateProgress(90, 'Finalizing...');
                     }
                 });
 
+                console.log('Final data check:', state.data.length, 'rows');
                 updateProgress(100, 'Complete!');
                 
                 setTimeout(() => {
@@ -1343,44 +1388,77 @@
             }
         }
 
-        function showLoading() {
-            document.getElementById('uploadSection').classList.add('hidden');
-            document.getElementById('loadingSection').classList.remove('hidden');
-            document.getElementById('errorSection').classList.add('hidden');
-            document.getElementById('successSection').classList.add('hidden');
-            document.getElementById('resultsSection').classList.add('hidden');
+        function showToast(message, type = 'success', duration = 3000) {
+            const container = document.getElementById('toastContainer');
+            const toastId = 'toast-' + Date.now();
+            
+            const iconSvg = {
+                success: '<svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"></path><polyline points="22,4 12,14.01 9,11.01"></polyline></svg>',
+                error: '<svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>',
+                info: '<svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>'
+            };
+            
+            const toast = document.createElement('div');
+            toast.id = toastId;
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                ${iconSvg[type]}
+                <div class="toast-content">${message}</div>
+                <button class="toast-close" onclick="removeToast('${toastId}')">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            `;
+            
+            container.appendChild(toast);
+            
+            // Trigger animation
+            setTimeout(() => toast.classList.add('show'), 10);
+            
+            // Auto remove
+            if (duration > 0) {
+                setTimeout(() => removeToast(toastId), duration);
+            }
         }
+
+        function removeToast(toastId) {
+            const toast = document.getElementById(toastId);
+            if (toast) {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 400);
+            }
+        }
+
+        window.removeToast = removeToast;
 
         function showError(message) {
             document.getElementById('uploadSection').classList.remove('hidden');
             document.getElementById('loadingSection').classList.add('hidden');
             document.getElementById('errorSection').classList.remove('hidden');
-            document.getElementById('successSection').classList.add('hidden');
             document.getElementById('resultsSection').classList.add('hidden');
             document.getElementById('errorMessage').textContent = message;
-        }
-
-        function showSuccess(message) {
-            document.getElementById('successSection').classList.remove('hidden');
-            document.getElementById('successMessage').textContent = message;
-            setTimeout(() => {
-                document.getElementById('successSection').classList.add('hidden');
-            }, 3000);
+            showToast(message, 'error');
         }
 
         function showResults() {
             const processingTime = ((performance.now() - state.processingStartTime) / 1000).toFixed(2);
+            
+            console.log('showResults called with data:', state.data.length, 'rows');
             
             document.getElementById('uploadSection').classList.add('hidden');
             document.getElementById('loadingSection').classList.add('hidden');
             document.getElementById('errorSection').classList.add('hidden');
             document.getElementById('resultsSection').classList.remove('hidden');
             
-            showSuccess(`File processed successfully in ${processingTime}s`);
+            showToast(`File processed successfully in ${processingTime}s`);
             
             // Initialize filtered data
             state.filteredData = [...state.data];
             state.currentPage = 0;
+            
+            console.log('Filtered data:', state.filteredData.length, 'rows');
             
             // Render all sections
             displayFileInfo();
@@ -1516,12 +1594,6 @@
             
             // Column statistics
             displayColumnStats();
-            
-            // Row groups
-            displayRowGroups();
-            
-            // Raw metadata
-            displayRawMetadata();
         }
 
         function displaySchemaTable() {
@@ -1839,7 +1911,6 @@
             document.getElementById('uploadSection').classList.remove('hidden');
             document.getElementById('loadingSection').classList.add('hidden');
             document.getElementById('errorSection').classList.add('hidden');
-            document.getElementById('successSection').classList.add('hidden');
             document.getElementById('resultsSection').classList.add('hidden');
             document.getElementById('fileInput').value = '';
             document.getElementById('searchInput').value = '';
@@ -1913,7 +1984,7 @@
             a.click();
             URL.revokeObjectURL(url);
             
-            showSuccess(`Exported ${filename} successfully`);
+            showToast(`Exported ${filename} successfully`);
         }
 
         function toggleKeyboardHelp() {
