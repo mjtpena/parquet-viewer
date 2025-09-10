@@ -38,34 +38,33 @@
         }
 
         .light-theme {
-            /* VSCode Light Theme Colors */
+            /* VSCode Light Theme Colors - Improved Contrast */
             --vscode-bg: #ffffff;
-            --vscode-sidebar-bg: #f8f8f8;
+            --vscode-sidebar-bg: #f8f9fa;
             --vscode-editor-bg: #ffffff;
-            --vscode-panel-bg: #f3f3f3;
-            --vscode-border: #d0d0d0;
-            --vscode-text: #1e1e1e;
-            --vscode-text-muted: #616161;
+            --vscode-panel-bg: #f1f3f4;
+            --vscode-border: #c1c7cd;
+            --vscode-text: #1a1a1a;
+            --vscode-text-muted: #5f6368;
             --vscode-text-active: #000000;
-            --vscode-accent: #0078d4;
-            --vscode-accent-hover: #106ebe;
-            --vscode-success: #16825d;
-            --vscode-warning: #bf8803;
-            --vscode-error: #a1260d;
-            --vscode-modified: #bf8803;
-            --vscode-hover: #e8e8e8;
-            --vscode-added: #16825d;
-            --vscode-selection: #add6ff;
-            --vscode-hover: #e8e8e8;
-            --vscode-focus: #005fb8;
-            --vscode-button: #0078d4;
-            --vscode-button-hover: #106ebe;
+            --vscode-accent: #1a73e8;
+            --vscode-accent-hover: #1557b0;
+            --vscode-success: #137333;
+            --vscode-warning: #ea8600;
+            --vscode-error: #d93025;
+            --vscode-modified: #b06000;
+            --vscode-hover: #e8f0fe;
+            --vscode-added: #137333;
+            --vscode-selection: #d2e3fc;
+            --vscode-focus: #1a73e8;
+            --vscode-button: #1a73e8;
+            --vscode-button-hover: #1557b0;
             --vscode-input-bg: #ffffff;
             --vscode-dropdown: #ffffff;
             
-            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
-            --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.08);
-            --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.06);
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
+            --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.08);
         }
 
         /* Light theme specific overrides */
@@ -112,11 +111,14 @@
 
         .light-theme table {
             background: var(--vscode-editor-bg);
+            border: 1px solid var(--vscode-border);
         }
 
         .light-theme th {
             background: var(--vscode-panel-bg);
-            border-bottom: 1px solid var(--vscode-border);
+            border-bottom: 2px solid var(--vscode-border);
+            border-right: 1px solid var(--vscode-border);
+            color: var(--vscode-text-active);
         }
 
         .light-theme th.sortable:hover {
@@ -125,19 +127,61 @@
 
         .light-theme td {
             border-bottom: 1px solid var(--vscode-border);
+            border-right: 1px solid var(--vscode-border);
+            color: var(--vscode-text);
         }
 
         .light-theme tr:hover {
             background: var(--vscode-hover);
         }
 
+        .light-theme tr:nth-child(even) {
+            background: #fafbfc;
+        }
+
         .light-theme .row-number {
             background: var(--vscode-panel-bg) !important;
+            color: var(--vscode-text-muted);
+            border-right: 2px solid var(--vscode-border) !important;
+        }
+
+        .light-theme .cell-null {
+            color: var(--vscode-text-muted);
+            background: rgba(95, 99, 104, 0.08);
+        }
+
+        .light-theme .cell-boolean {
+            color: var(--vscode-warning);
+        }
+
+        .light-theme .cell-number {
+            color: var(--vscode-success);
+        }
+
+        .light-theme .cell-string {
+            color: var(--vscode-text);
+        }
+
+        .light-theme .cell-object {
+            color: var(--vscode-modified);
+            background: rgba(176, 96, 0, 0.08);
         }
 
         .light-theme .cell-editable:hover {
             background: var(--vscode-selection) !important;
             box-shadow: inset 0 0 0 1px var(--vscode-accent);
+        }
+
+        .light-theme .cell-modified {
+            background: rgba(19, 115, 51, 0.12) !important;
+            border-left: 3px solid var(--vscode-success);
+        }
+
+        .light-theme .cell-tooltip {
+            background: var(--vscode-editor-bg);
+            border: 1px solid var(--vscode-border);
+            color: var(--vscode-text);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
         }
 
         .light-theme .table-container {
@@ -565,9 +609,9 @@
         .search-input {
             width: 100%;
             padding: 10px 40px 10px 16px;
-            background: var(--vscode-editor-bg);
+            background: var(--vscode-input-bg);
             border: 1px solid var(--vscode-border);
-            border-radius: 25px;
+            border-radius: 6px;
             color: var(--vscode-text);
             font-size: 0.9rem;
             transition: all 0.3s ease;
@@ -580,8 +624,12 @@
         .search-input:focus {
             outline: none;
             border-color: var(--vscode-accent);
-            background: var(--vscode-editor-bg);
-            box-shadow: 0 0 0 3px rgba(0, 120, 212, 0.1);
+            background: var(--vscode-input-bg);
+            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
+        }
+
+        .light-theme .search-input:focus {
+            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.15);
         }
 
         .search-icon {
@@ -735,25 +783,39 @@
         
         table {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0;
             font-size: 0.9rem;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
+            background: var(--vscode-editor-bg);
+            border-radius: 8px;
             overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--vscode-border);
         }
         
         th {
-            background: rgba(255, 255, 255, 0.15);
-            padding: 8px;
+            background: var(--vscode-panel-bg);
+            padding: 12px 16px;
             text-align: left;
             font-weight: 600;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.8rem;
+            color: var(--vscode-text-active);
+            border-bottom: 2px solid var(--vscode-border);
+            border-right: 1px solid var(--vscode-border);
             position: sticky;
             top: 0;
             z-index: 10;
+            min-width: 120px;
+            max-width: 300px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            resize: horizontal;
+            cursor: col-resize;
+        }
+
+        th:last-child {
+            border-right: none;
         }
 
         th.sortable {
@@ -763,97 +825,270 @@
         }
 
         th.sortable:hover {
-            background: rgba(255, 255, 255, 0.2);
+            background: var(--vscode-hover);
+            color: var(--vscode-text-active);
         }
 
         th.sorted-asc::after {
             content: ' ↑';
-            opacity: 0.7;
+            color: var(--vscode-accent);
+            font-weight: bold;
         }
 
         th.sorted-desc::after {
             content: ' ↓';
-            opacity: 0.7;
+            color: var(--vscode-accent);
+            font-weight: bold;
         }
         
         td {
-            padding: 8px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--vscode-border);
+            border-right: 1px solid var(--vscode-border);
             transition: background 0.2s ease;
             font-size: 0.85rem;
+            color: var(--vscode-text);
+            max-width: 300px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            vertical-align: top;
+        }
+
+        td:last-child {
+            border-right: none;
         }
         
         tr:hover {
-            background: rgba(255, 255, 255, 0.08);
+            background: var(--vscode-hover);
+        }
+
+        tr:nth-child(even) {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .light-theme tr:nth-child(even) {
+            background: var(--vscode-panel-bg);
         }
 
         .row-number {
-            background: rgba(255, 255, 255, 0.1) !important;
+            background: var(--vscode-panel-bg) !important;
             font-weight: 600;
             text-align: center;
             font-size: 0.8rem;
-            opacity: 0.8;
-            width: 60px;
+            color: var(--vscode-text-muted);
+            width: 80px;
+            min-width: 80px;
+            max-width: 80px;
             position: sticky;
             left: 0;
-            z-index: 5;
+            z-index: 15;
+            border-right: 2px solid var(--vscode-border) !important;
         }
 
         .cell-null {
-            color: #9ca3af;
+            color: var(--vscode-text-muted);
             font-style: italic;
             opacity: 0.7;
+            background: rgba(156, 163, 175, 0.1);
         }
 
         .cell-boolean {
-            color: #fbbf24;
+            color: var(--vscode-warning);
             font-weight: 600;
         }
 
         .cell-number {
-            color: #34d399;
+            color: var(--vscode-success);
             font-weight: 500;
             text-align: right;
+            font-feature-settings: 'tnum';
         }
 
         .cell-string {
-            color: #e5e7eb;
+            color: var(--vscode-text);
         }
 
         .cell-object {
-            color: #a78bfa;
+            color: var(--vscode-modified);
             font-family: 'Courier New', monospace;
             font-size: 0.8rem;
+            background: rgba(162, 192, 122, 0.1);
         }
 
         .cell-editable {
             cursor: pointer;
             transition: all 0.2s ease;
+            position: relative;
         }
 
         .cell-editable:hover {
-            background: rgba(255, 255, 255, 0.1) !important;
-            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+            background: var(--vscode-selection) !important;
+            box-shadow: inset 0 0 0 1px var(--vscode-accent);
+            z-index: 10;
+            transform: scale(1.02);
+        }
+
+        .cell-editable:hover::after {
+            content: '✏️';
+            position: absolute;
+            top: 2px;
+            right: 4px;
+            font-size: 0.7rem;
+            opacity: 0.7;
+        }
+
+        .light-theme .cell-editable:hover {
+            background: var(--vscode-selection) !important;
+            box-shadow: inset 0 0 0 1px var(--vscode-accent);
         }
 
         .cell-editing {
-            background: rgba(99, 102, 241, 0.2) !important;
-            box-shadow: inset 0 0 0 2px var(--accent-color);
+            background: var(--vscode-input-bg) !important;
+            box-shadow: inset 0 0 0 2px var(--vscode-accent);
+            border-radius: 4px;
+            position: relative;
+            z-index: 100;
         }
 
         .cell-edit-input {
-            background: transparent;
-            border: none;
-            color: inherit;
+            background: var(--vscode-input-bg);
+            border: 1px solid var(--vscode-accent);
+            color: var(--vscode-text);
             font: inherit;
             width: 100%;
-            padding: 0;
+            padding: 4px 8px;
             outline: none;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            min-width: 120px;
+        }
+
+        .light-theme .cell-edit-input {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .cell-edit-controls {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: var(--vscode-panel-bg);
+            border: 1px solid var(--vscode-border);
+            border-radius: 4px;
+            padding: 4px;
+            display: flex;
+            gap: 4px;
+            z-index: 101;
+            box-shadow: var(--shadow-md);
+            margin-top: 2px;
+        }
+
+        .cell-edit-btn {
+            background: var(--vscode-button);
+            border: none;
+            color: var(--vscode-text-active);
+            padding: 4px 8px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .cell-edit-btn:hover {
+            background: var(--vscode-button-hover);
+        }
+
+        .cell-edit-btn.cancel {
+            background: var(--vscode-panel-bg);
+            color: var(--vscode-text-muted);
+            border: 1px solid var(--vscode-border);
+        }
+
+        .cell-edit-btn.cancel:hover {
+            background: var(--vscode-hover);
+            color: var(--vscode-text);
+        }
+
+        .edit-mode-indicator {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--vscode-accent);
+            color: var(--vscode-text-active);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            z-index: 1000;
+            box-shadow: var(--shadow-lg);
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        .edit-mode-indicator.show {
+            display: block;
         }
 
         .cell-modified {
-            background: rgba(16, 185, 129, 0.1) !important;
-            border-left: 3px solid var(--success-color);
+            background: rgba(16, 185, 129, 0.15) !important;
+            border-left: 3px solid var(--vscode-success);
+        }
+
+        .cell-expandable {
+            cursor: pointer;
+            position: relative;
+        }
+
+        .cell-expandable::after {
+            content: '⋯';
+            position: absolute;
+            right: 4px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--vscode-text-muted);
+            font-weight: bold;
+        }
+
+        .cell-expanded {
+            white-space: normal !important;
+            max-width: none !important;
+            word-wrap: break-word;
+            min-width: 200px;
+            position: relative;
+            z-index: 20;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--vscode-accent);
+        }
+
+        .cell-tooltip {
+            position: absolute;
+            background: var(--vscode-panel-bg);
+            border: 1px solid var(--vscode-border);
+            border-radius: 6px;
+            padding: 8px 12px;
+            max-width: 400px;
+            max-height: 200px;
+            overflow: auto;
+            z-index: 1000;
+            box-shadow: var(--shadow-lg);
+            font-size: 0.85rem;
+            color: var(--vscode-text);
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            display: none;
         }
 
         .type-badge {
@@ -1105,6 +1340,16 @@
             color: var(--vscode-text-active);
             pointer-events: none;
             cursor: default;
+            box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.3);
+            transform: scale(1.05);
+        }
+
+        .data-preview-table {
+            transition: opacity 0.2s ease;
+        }
+
+        .data-preview-table.mode-switching {
+            opacity: 0.7;
         }
 
         .help-icon {
@@ -1677,7 +1922,7 @@
                             </div>
                             
                             <div style="display: flex; gap: 10px; align-items: center;">
-                                <select id="pageSizeSelect" onchange="changePageSize()" style="background: rgba(255, 255, 255, 0.1); color: white; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 6px; padding: 6px 10px; font-size: 0.8rem;">
+                                <select id="pageSizeSelect" onchange="changePageSize()" style="background: var(--vscode-input-bg); color: var(--vscode-text); border: 1px solid var(--vscode-border); border-radius: 6px; padding: 6px 10px; font-size: 0.8rem;">
                                     <option value="25">25</option>
                                     <option value="50" selected>50</option>
                                     <option value="100">100</option>
@@ -1709,7 +1954,7 @@
                             <div style="display: flex; gap: 8px; align-items: center;">
                                 <button id="firstBtn" class="page-btn" onclick="goToPage(0)">First</button>
                                 <button id="prevBtn" class="page-btn" onclick="changePage(-1)">Prev</button>
-                                <input type="number" id="pageJumpInput" min="1" onkeypress="handlePageJump(event)" style="width: 50px; padding: 4px 6px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 4px; color: white; text-align: center; font-size: 0.8rem;">
+                                <input type="number" id="pageJumpInput" min="1" onkeypress="handlePageJump(event)" style="width: 50px; padding: 4px 6px; background: var(--vscode-input-bg); border: 1px solid var(--vscode-border); border-radius: 4px; color: var(--vscode-text); text-align: center; font-size: 0.8rem;">
                                 <span id="totalPagesText" style="font-size: 0.8rem; opacity: 0.8;"></span>
                                 <button id="nextBtn" class="page-btn" onclick="changePage(1)">Next</button>
                                 <button id="lastBtn" class="page-btn" onclick="goToLastPage()">Last</button>
@@ -1791,27 +2036,58 @@
         window.setMode = function(mode) {
             if (state.currentMode === mode) return; // Don't do anything if already in this mode
             
+            // Add visual transition
+            const tableContainer = document.querySelector('.data-preview-table');
+            if (tableContainer) {
+                tableContainer.classList.add('mode-switching');
+            }
+            
             state.currentMode = mode;
             
             // Update button states
             document.getElementById('viewModeBtn').classList.toggle('active', mode === 'view');
             document.getElementById('editModeBtn').classList.toggle('active', mode === 'edit');
             
+            // Show mode change toast
+            if (mode === 'edit') {
+                showToast('✏️ Edit mode enabled - Click any cell to modify values', 'info', 3000);
+            } else {
+                showToast('👁️ View mode enabled - Data is read-only', 'info', 2000);
+                // Hide edit indicator if switching away from edit mode
+                hideEditModeIndicator();
+            }
+            
             // Refresh data display to apply mode changes
-            displayData();
+            setTimeout(() => {
+                displayData();
+                if (tableContainer) {
+                    tableContainer.classList.remove('mode-switching');
+                }
+            }, 100);
         }
 
         window.showModeHelp = function() {
             const helpText = state.currentMode === 'edit' 
-                ? 'Edit Mode: Click any data cell to modify values. Changes are local-only for exploration.'
-                : 'View Mode: Browse data in read-only format. Switch to Edit mode to modify values.';
+                ? '<strong>Edit Mode Active</strong><br>• Click any data cell to modify values<br>• Changes are stored locally for exploration<br>• Use Save buttons to export modifications<br>• Press <strong>E</strong> or <strong>Esc</strong> to exit edit mode'
+                : '<strong>View Mode Active</strong><br>• Browse data in read-only format<br>• Click truncated cells to expand content<br>• Press <strong>E</strong> to enter Edit mode<br>• Use search and filters to explore data';
             
-            showToast(helpText, 'info', 4000);
+            showToast(helpText, 'info', 5000);
         }
 
         window.showKeyboardHelp = function() {
-            const helpText = 'Keyboard Shortcuts:\n• ? - Show this help\n• Ctrl+F - Focus search\n• ←→ - Navigate pages\n• Ctrl+S - Export Modified CSV\n• Ctrl+E - Export CSV\n• Esc - Reset view';
-            showToast(helpText.replace(/\n/g, '<br>'), 'info', 6000);
+            const helpText = 'Keyboard Shortcuts:<br>' +
+                '• <strong>E</strong> - Toggle Edit/View mode<br>' +
+                '• <strong>?</strong> - Show this help<br>' +
+                '• <strong>Ctrl+F</strong> - Focus search<br>' +
+                '• <strong>←→</strong> - Navigate pages<br>' +
+                '• <strong>Ctrl+S</strong> - Export Modified CSV<br>' +
+                '• <strong>Ctrl+E</strong> - Export CSV<br>' +
+                '• <strong>Esc</strong> - Exit edit mode or reset view<br>' +
+                '<br><em>In Edit Mode:</em><br>' +
+                '• Click any cell to edit<br>' +
+                '• Enter to save, Esc to cancel<br>' +
+                '• Tab to save and move to next cell';
+            showToast(helpText, 'info', 8000);
         }
 
         // Tree view utilities
@@ -1901,6 +2177,9 @@
 
         function setupKeyboardShortcuts() {
             document.addEventListener('keydown', async (e) => {
+                // Don't interfere if user is editing a cell
+                if (state.isEditing) return;
+                
                 // Ctrl+F - Focus search
                 if (e.ctrlKey && e.key === 'f') {
                     e.preventDefault();
@@ -1912,6 +2191,12 @@
                 }
                 else if (e.key === 'ArrowRight' && !e.target.matches('input')) {
                     changePage(1);
+                }
+                // E - Toggle edit mode
+                else if (e.key === 'e' && !e.target.matches('input')) {
+                    e.preventDefault();
+                    const newMode = state.currentMode === 'edit' ? 'view' : 'edit';
+                    setMode(newMode);
                 }
                 // Ctrl+S - Export Modified Data
                 else if (e.ctrlKey && e.key === 's') {
@@ -1927,9 +2212,13 @@
                     e.preventDefault();
                     exportData('csv');
                 }
-                // Escape - Reset view
+                // Escape - Reset view or cancel edit
                 else if (e.key === 'Escape') {
-                    resetViewer();
+                    if (state.currentMode === 'edit') {
+                        setMode('view');
+                    } else {
+                        resetViewer();
+                    }
                 }
                 // ? - Show keyboard help
                 else if (e.key === '?') {
@@ -2381,12 +2670,36 @@
             const columns = Object.keys(pageData[0]);
             console.log('Columns:', columns);
             
-            // Build header with sortable columns
+            // Build header with sortable columns and type indicators
             let html = '<thead><tr>';
             html += '<th class="row-number">#</th>';
             columns.forEach(col => {
                 const sortClass = state.sortColumn === col ? `sorted-${state.sortDirection}` : '';
-                html += `<th class="sortable ${sortClass}" onclick="sortColumn('${col}')" title="Click to sort by ${col}">${col}</th>`;
+                
+                // Determine column type based on first non-null value
+                let columnType = 'unknown';
+                let typeIcon = '';
+                for (const row of pageData) {
+                    const value = row[col];
+                    if (value !== null && value !== undefined) {
+                        if (typeof value === 'number') {
+                            columnType = 'number';
+                            typeIcon = '<span style="color: var(--vscode-success); margin-right: 4px; font-size: 0.7rem;">123</span>';
+                        } else if (typeof value === 'boolean') {
+                            columnType = 'boolean';
+                            typeIcon = '<span style="color: var(--vscode-warning); margin-right: 4px; font-size: 0.7rem;">T/F</span>';
+                        } else if (typeof value === 'object') {
+                            columnType = 'object';
+                            typeIcon = '<span style="color: var(--vscode-modified); margin-right: 4px; font-size: 0.7rem;">{}</span>';
+                        } else {
+                            columnType = 'string';
+                            typeIcon = '<span style="color: var(--vscode-text-muted); margin-right: 4px; font-size: 0.7rem;">Aa</span>';
+                        }
+                        break;
+                    }
+                }
+                
+                html += `<th class="sortable ${sortClass}" onclick="sortColumn('${col}')" title="Click to sort by ${col} (${columnType})">${typeIcon}${escapeHtml(col)}</th>`;
             });
             html += '</tr></thead><tbody>';
             
@@ -2398,24 +2711,36 @@
                     let value = row[col];
                     let cellClass = '';
                     let displayValue = value;
+                    let fullValue = value; // Keep original value for tooltip
                     
                     if (value === null || value === undefined) {
                         displayValue = 'null';
                         cellClass = 'cell-null';
+                        fullValue = 'null';
                     } else if (typeof value === 'boolean') {
                         cellClass = 'cell-boolean';
                         displayValue = value ? '✓ true' : '✗ false';
+                        fullValue = displayValue;
                     } else if (typeof value === 'number') {
                         cellClass = 'cell-number';
                         displayValue = value.toLocaleString();
+                        fullValue = value.toString();
                     } else if (typeof value === 'object') {
                         cellClass = 'cell-object';
+                        fullValue = JSON.stringify(value, null, 2);
                         displayValue = JSON.stringify(value);
+                        // Truncate long objects more intelligently
+                        if (displayValue.length > 80) {
+                            displayValue = displayValue.substring(0, 80) + '...';
+                        }
                     } else {
                         cellClass = 'cell-string';
-                        // Truncate long strings
-                        if (String(value).length > 100) {
-                            displayValue = String(value).substring(0, 100) + '...';
+                        fullValue = String(value);
+                        // Truncate long strings but keep full value for tooltip
+                        if (String(value).length > 80) {
+                            displayValue = String(value).substring(0, 80) + '...';
+                        } else {
+                            displayValue = String(value);
                         }
                     }
                     
@@ -2423,13 +2748,19 @@
                     const isModified = state.modifiedCells.has(cellId);
                     const modifiedClass = isModified ? ' cell-modified' : '';
                     const editableClass = state.currentMode === 'edit' ? ' cell-editable' : '';
-                    const clickHandler = state.currentMode === 'edit' ? 'onclick="editCell(this)"' : '';
-                    html += `<td class="${cellClass}${editableClass}${modifiedClass}" 
-                              title="${escapeHtml(String(value))}" 
+                    const expandableClass = fullValue !== displayValue ? ' cell-expandable' : '';
+                    const clickHandler = state.currentMode === 'edit' ? 'onclick="editCell(this)"' : (fullValue !== displayValue ? 'onclick="toggleCellExpansion(this)"' : '');
+                    
+                    html += `<td class="${cellClass}${editableClass}${modifiedClass}${expandableClass}" 
+                              title="${escapeHtml(fullValue)}" 
                               data-row="${start + index}" 
                               data-col="${col}" 
                               data-cell-id="${cellId}"
-                              ${clickHandler}>${escapeHtml(String(displayValue))}</td>`;
+                              data-full-value="${escapeHtml(fullValue)}"
+                              ${clickHandler}
+                              onmouseenter="showCellTooltip(this, event)"
+                              onmouseleave="hideCellTooltip()"
+                              >${escapeHtml(displayValue)}</td>`;
                 });
                 html += '</tr>';
             });
@@ -2598,20 +2929,60 @@
             state.isEditing = true;
             cell.classList.add('cell-editing');
             
-            // Create input element
+            // Show edit mode indicator
+            showEditModeIndicator();
+            
+            // Create input element with proper styling
             const input = document.createElement('input');
             input.className = 'cell-edit-input';
             input.value = originalValue === null || originalValue === undefined ? '' : String(originalValue);
-            input.type = typeof originalValue === 'number' ? 'number' : 'text';
+            
+            // Set input type based on original value type
+            if (typeof originalValue === 'number') {
+                input.type = 'number';
+                input.step = 'any';
+            } else if (typeof originalValue === 'boolean') {
+                // Create a dropdown for boolean values
+                const select = document.createElement('select');
+                select.className = 'cell-edit-input';
+                select.innerHTML = `
+                    <option value="true" ${originalValue === true ? 'selected' : ''}>true</option>
+                    <option value="false" ${originalValue === false ? 'selected' : ''}>false</option>
+                    <option value="null">null</option>
+                `;
+                input = select; // Replace input with select
+            } else {
+                input.type = 'text';
+            }
+            
+            // Create control buttons
+            const controls = document.createElement('div');
+            controls.className = 'cell-edit-controls';
+            controls.innerHTML = `
+                <button class="cell-edit-btn save" title="Save changes (Enter)">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20,6 9,17 4,12"></polyline>
+                    </svg>
+                    Save
+                </button>
+                <button class="cell-edit-btn cancel" title="Cancel editing (Esc)">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                    Cancel
+                </button>
+            `;
             
             // Replace cell content
             const originalContent = cell.innerHTML;
             cell.innerHTML = '';
             cell.appendChild(input);
+            cell.appendChild(controls);
             
             // Focus and select
             input.focus();
-            input.select();
+            if (input.select) input.select();
             
             // Handle save/cancel
             const saveEdit = () => {
@@ -2620,9 +2991,16 @@
                 // Convert value to appropriate type
                 if (typeof originalValue === 'number') {
                     newValue = newValue === '' ? null : parseFloat(newValue);
-                    if (isNaN(newValue)) newValue = originalValue; // Revert if invalid
-                } else if (typeof originalValue === 'boolean') {
-                    newValue = newValue.toLowerCase() === 'true';
+                    if (isNaN(newValue)) {
+                        showToast('Invalid number format', 'error', 3000);
+                        return; // Don't save invalid numbers
+                    }
+                } else if (typeof originalValue === 'boolean' || input.tagName === 'SELECT') {
+                    if (newValue === 'null') {
+                        newValue = null;
+                    } else {
+                        newValue = newValue === 'true';
+                    }
                 } else if (newValue === '' && originalValue !== '') {
                     newValue = null;
                 }
@@ -2633,32 +3011,157 @@
                 // Mark as modified if changed
                 if (newValue !== originalValue) {
                     state.modifiedCells.add(cellId);
-                    showToast('Cell modified - changes are local only', 'info', 2000);
+                    showToast(`Cell updated: ${col}`, 'success', 2000);
+                } else {
+                    showToast('No changes made', 'info', 1500);
                 }
                 
                 // Restore cell display
-                state.isEditing = false;
-                cell.classList.remove('cell-editing');
-                displayData();
+                finishEdit();
             };
             
             const cancelEdit = () => {
-                state.isEditing = false;
-                cell.classList.remove('cell-editing');
-                cell.innerHTML = originalContent;
+                showToast('Edit cancelled', 'info', 1500);
+                finishEdit();
             };
             
-            // Event listeners
-            input.addEventListener('blur', saveEdit);
+            const finishEdit = () => {
+                state.isEditing = false;
+                cell.classList.remove('cell-editing');
+                hideEditModeIndicator();
+                displayData();
+            };
+            
+            // Event listeners for buttons
+            controls.querySelector('.save').addEventListener('click', (e) => {
+                e.stopPropagation();
+                saveEdit();
+            });
+            
+            controls.querySelector('.cancel').addEventListener('click', (e) => {
+                e.stopPropagation();
+                cancelEdit();
+            });
+            
+            // Event listeners for keyboard
             input.addEventListener('keydown', (e) => {
+                e.stopPropagation(); // Prevent table navigation
                 if (e.key === 'Enter') {
                     e.preventDefault();
                     saveEdit();
                 } else if (e.key === 'Escape') {
                     e.preventDefault();
                     cancelEdit();
+                } else if (e.key === 'Tab') {
+                    e.preventDefault();
+                    saveEdit();
+                    // TODO: Move to next editable cell
                 }
             });
+            
+            // Close on outside click
+            const handleOutsideClick = (e) => {
+                if (!cell.contains(e.target)) {
+                    saveEdit();
+                    document.removeEventListener('click', handleOutsideClick);
+                }
+            };
+            
+            setTimeout(() => {
+                document.addEventListener('click', handleOutsideClick);
+            }, 100);
+        }
+
+        window.showCellTooltip = function(cell, event) {
+            if (state.isEditing) return;
+            
+            const fullValue = cell.dataset.fullValue;
+            const displayValue = cell.textContent;
+            
+            // Only show tooltip if content is truncated
+            if (fullValue && fullValue !== displayValue) {
+                hideCellTooltip(); // Hide any existing tooltip
+                
+                const tooltip = document.createElement('div');
+                tooltip.className = 'cell-tooltip';
+                tooltip.id = 'cellTooltip';
+                tooltip.textContent = fullValue;
+                
+                document.body.appendChild(tooltip);
+                
+                // Position tooltip
+                const rect = cell.getBoundingClientRect();
+                const tooltipRect = tooltip.getBoundingClientRect();
+                
+                let left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
+                let top = rect.top - tooltipRect.height - 8;
+                
+                // Adjust if tooltip goes off screen
+                if (left < 8) left = 8;
+                if (left + tooltipRect.width > window.innerWidth - 8) {
+                    left = window.innerWidth - tooltipRect.width - 8;
+                }
+                if (top < 8) {
+                    top = rect.bottom + 8;
+                }
+                
+                tooltip.style.left = left + 'px';
+                tooltip.style.top = top + 'px';
+                tooltip.style.display = 'block';
+            }
+        }
+
+        window.hideCellTooltip = function() {
+            const tooltip = document.getElementById('cellTooltip');
+            if (tooltip) {
+                tooltip.remove();
+            }
+        }
+
+        window.showEditModeIndicator = function() {
+            let indicator = document.getElementById('editModeIndicator');
+            if (!indicator) {
+                indicator = document.createElement('div');
+                indicator.id = 'editModeIndicator';
+                indicator.className = 'edit-mode-indicator';
+                indicator.innerHTML = `
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;">
+                        <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path>
+                        <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                    Editing Cell - Press Enter to save, Esc to cancel
+                `;
+                document.body.appendChild(indicator);
+            }
+            indicator.classList.add('show');
+        }
+
+        window.hideEditModeIndicator = function() {
+            const indicator = document.getElementById('editModeIndicator');
+            if (indicator) {
+                indicator.classList.remove('show');
+            }
+        }
+
+        window.toggleCellExpansion = function(cell) {
+            if (state.isEditing || state.currentMode === 'edit') return;
+            
+            const isExpanded = cell.classList.contains('cell-expanded');
+            
+            // Remove expansion from all cells first
+            document.querySelectorAll('.cell-expanded').forEach(c => {
+                c.classList.remove('cell-expanded');
+                const originalValue = c.textContent.includes('...') ? 
+                    c.dataset.fullValue.substring(0, 80) + '...' : c.dataset.fullValue;
+                c.textContent = originalValue;
+            });
+            
+            hideCellTooltip();
+            
+            if (!isExpanded) {
+                cell.classList.add('cell-expanded');
+                cell.textContent = cell.dataset.fullValue;
+            }
         }
 
         window.resetViewer = function() {
