@@ -1090,6 +1090,33 @@
             <div class="results-layout">
                 <!-- Sidebar with compact info -->
                 <div class="sidebar">
+                    <!-- File Actions -->
+                    <div class="compact-section">
+                        <h3>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
+                                <path d="M8 21v-4a2 2 0 012-2h4a2 2 0 012 2v4"></path>
+                            </svg>
+                            Actions
+                        </h3>
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <button class="btn btn-secondary btn-small" onclick="uploadNewFile()" style="width: 100%; justify-content: center;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                </svg>
+                                Upload New File
+                            </button>
+                            <button class="btn btn-small" onclick="downloadCurrentFile()" style="width: 100%; justify-content: center;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path>
+                                    <polyline points="7 10 12 15 17 10"></polyline>
+                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                </svg>
+                                Download Original
+                            </button>
+                        </div>
+                    </div>
+
                     <!-- File Overview -->
                     <div class="compact-section">
                         <h3>
@@ -1440,6 +1467,8 @@
         }
 
         function showError(message) {
+            // Show header again when there's an error
+            document.querySelector('header').classList.remove('hidden');
             document.getElementById('uploadSection').classList.remove('hidden');
             document.getElementById('loadingSection').classList.add('hidden');
             document.getElementById('errorSection').classList.remove('hidden');
@@ -1453,6 +1482,8 @@
             
             console.log('showResults called with data:', state.data.length, 'rows');
             
+            // Hide header to save space and show results
+            document.querySelector('header').classList.add('hidden');
             document.getElementById('uploadSection').classList.add('hidden');
             document.getElementById('loadingSection').classList.add('hidden');
             document.getElementById('errorSection').classList.add('hidden');
@@ -1908,6 +1939,24 @@
             displayData();
         }
 
+        window.uploadNewFile = function() {
+            resetViewer();
+            // Trigger file input dialog
+            document.getElementById('fileInput').click();
+        }
+
+        window.downloadCurrentFile = function() {
+            if (state.selectedFile) {
+                const url = URL.createObjectURL(state.selectedFile);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = state.selectedFile.name;
+                a.click();
+                URL.revokeObjectURL(url);
+                showToast('Original file downloaded successfully');
+            }
+        }
+
         window.resetViewer = function() {
             state = {
                 data: [],
@@ -1923,6 +1972,8 @@
                 selectedFile: null
             };
             
+            // Show header again when returning to upload screen
+            document.querySelector('header').classList.remove('hidden');
             document.getElementById('uploadSection').classList.remove('hidden');
             document.getElementById('loadingSection').classList.add('hidden');
             document.getElementById('errorSection').classList.add('hidden');
