@@ -34,23 +34,28 @@
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
             min-height: 100vh;
             color: var(--text-light);
-            padding: 15px;
-            line-height: 1.5;
+            padding: 10px;
+            line-height: 1.4;
+            overflow-x: hidden;
         }
         
         .container {
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
         
         header {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+            flex-shrink: 0;
         }
         
         h1 {
-            font-size: 2rem;
-            margin-bottom: 8px;
+            font-size: 1.8rem;
+            margin-bottom: 6px;
             font-weight: 700;
             background: linear-gradient(45deg, #fff, #e0e7ff);
             -webkit-background-clip: text;
@@ -59,16 +64,16 @@
         }
         
         .subtitle {
-            font-size: 1rem;
+            font-size: 0.9rem;
             opacity: 0.9;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
         
         .privacy-badge {
             display: inline-flex;
-            gap: 15px;
-            margin-top: 8px;
-            font-size: 0.8rem;
+            gap: 12px;
+            margin-top: 6px;
+            font-size: 0.75rem;
             opacity: 0.8;
             flex-wrap: wrap;
             justify-content: center;
@@ -247,31 +252,61 @@
             gap: 10px;
         }
         
-        .section {
-            background: var(--bg-glass);
-            backdrop-filter: blur(10px);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 15px;
-            border: 1px solid var(--border-light);
-            box-shadow: var(--shadow-sm);
-            transition: all 0.3s ease;
+        .results-layout {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 15px;
+            height: calc(100vh - 140px);
+            overflow: hidden;
         }
 
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow-y: auto;
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .compact-section {
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .compact-section h3 {
+            font-size: 1rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            color: white;
+        }
+        
         .data-preview-section {
             background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.08));
             border: 2px solid rgba(99, 102, 241, 0.3);
             box-shadow: 0 8px 32px rgba(99, 102, 241, 0.1);
-            padding: 25px 20px;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            flex: 1;
         }
 
-        .section:hover {
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-md);
-        }
-        
-        .section h2 {
-            font-size: 1.3rem;
+        .data-preview-section h2 {
+            font-size: 1.4rem;
+            color: var(--accent-color);
             margin-bottom: 15px;
             display: flex;
             align-items: center;
@@ -279,9 +314,63 @@
             font-weight: 600;
         }
 
-        .data-preview-section h2 {
-            font-size: 1.5rem;
-            color: var(--accent-color);
+        .compact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .compact-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .compact-card .label {
+            font-size: 0.7rem;
+            opacity: 0.8;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .compact-card .value {
+            font-size: 1rem;
+            font-weight: 700;
+            word-break: break-all;
+        }
+
+        .mini-tabs {
+            display: flex;
+            gap: 3px;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 3px;
+            border-radius: 8px;
+        }
+
+        .mini-tab {
+            padding: 6px 12px;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.75rem;
+            font-weight: 500;
+            white-space: nowrap;
+            flex: 1;
+            text-align: center;
+        }
+
+        .mini-tab.active {
+            background: white;
+            color: var(--primary-color);
+            font-weight: 600;
         }
 
         .section-badge {
@@ -497,10 +586,10 @@
         
         th {
             background: rgba(255, 255, 255, 0.15);
-            padding: 12px 10px;
+            padding: 8px;
             text-align: left;
             font-weight: 600;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -530,9 +619,10 @@
         }
         
         td {
-            padding: 10px;
+            padding: 8px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             transition: background 0.2s ease;
+            font-size: 0.85rem;
         }
         
         tr:hover {
@@ -617,98 +707,73 @@
         
         .table-wrapper {
             overflow: auto;
-            margin-top: 10px;
-            max-height: 600px;
-            border-radius: 10px;
+            border-radius: 8px;
             border: 1px solid rgba(255, 255, 255, 0.1);
+            flex: 1;
+            min-height: 0;
         }
 
         .data-preview-table {
-            max-height: 70vh !important;
+            height: 100%;
         }
 
         .metadata-section .table-wrapper {
-            max-height: 300px;
+            max-height: 200px;
         }
 
         .table-controls {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
-            gap: 15px;
+            margin-bottom: 10px;
+            gap: 10px;
             flex-wrap: wrap;
         }
 
-        .page-size-selector {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .search-box {
+            flex: 1;
+            min-width: 150px;
+            max-width: 250px;
+            position: relative;
         }
 
-        .page-size-selector select {
+        .search-input {
+            width: 100%;
+            padding: 8px 32px 8px 12px;
             background: rgba(255, 255, 255, 0.1);
-            color: white;
             border: 1px solid var(--border-light);
-            border-radius: 6px;
-            padding: 6px 12px;
-            font-size: 0.9rem;
+            border-radius: 20px;
+            color: white;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
         }
-        
+
         .pagination {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: 15px;
-            padding-top: 15px;
+            margin-top: 10px;
+            padding-top: 10px;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
             flex-wrap: wrap;
-            gap: 15px;
+            gap: 10px;
         }
-        
+
         .page-info {
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             opacity: 0.8;
             font-weight: 500;
         }
 
-        .page-info span {
-            font-weight: 600;
-            color: white;
-        }
-        
-        .page-buttons {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .page-jump {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .page-jump input {
-            width: 60px;
-            padding: 6px 8px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid var(--border-light);
-            border-radius: 6px;
-            color: white;
-            text-align: center;
-            font-size: 0.9rem;
-        }
-        
         .page-btn {
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
             color: white;
-            padding: 8px 16px;
-            border-radius: 8px;
+            padding: 6px 12px;
+            border-radius: 6px;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             font-weight: 500;
         }
         
@@ -979,161 +1044,135 @@
         </div>
 
         <div id="resultsSection" class="hidden">
-            <!-- File Overview -->
-            <div class="section">
-                <h2>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path>
-                        <polyline points="14,2 14,8 20,8"></polyline>
-                    </svg>
-                    File Overview
-                </h2>
-                <div id="fileInfo" class="info-grid"></div>
-                <div id="fileStats" class="stats-grid"></div>
-                <div id="performanceInfo" class="performance-info hidden"></div>
-            </div>
+            <div class="results-layout">
+                <!-- Sidebar with compact info -->
+                <div class="sidebar">
+                    <!-- File Overview -->
+                    <div class="compact-section">
+                        <h3>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path>
+                                <polyline points="14,2 14,8 20,8"></polyline>
+                            </svg>
+                            File Overview
+                        </h3>
+                        <div id="fileInfo" class="compact-grid"></div>
+                        <div id="fileStats" class="compact-grid" style="margin-top: 10px;"></div>
+                    </div>
 
-            <!-- Data Preview -->
-            <div class="section data-preview-section">
-                <h2>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M3 3h18v18H3zM21 9H3M9 21V9"></path>
-                    </svg>
-                    Data Preview
-                    <span class="section-badge">Primary View</span>
-                </h2>
-                
-                <div class="table-controls">
-                    <div class="search-box">
-                        <input type="text" id="searchInput" class="search-input" placeholder="Search data...">
-                        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="11" cy="11" r="8"></circle>
-                            <path d="M21 21l-4.35-4.35"></path>
-                        </svg>
-                    </div>
-                    
-                    <div class="page-size-selector">
-                        <label for="pageSizeSelect">Rows per page:</label>
-                        <select id="pageSizeSelect" onchange="changePageSize()">
-                            <option value="25">25</option>
-                            <option value="50" selected>50</option>
-                            <option value="100">100</option>
-                            <option value="200">200</option>
-                            <option value="500">500</option>
-                        </select>
-                    </div>
-                    
-                    <button class="btn btn-small" onclick="refreshData()">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="23 4 23 10 17 10"></polyline>
-                            <polyline points="1 20 1 14 7 14"></polyline>
-                            <path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 003.51 15"></path>
-                        </svg>
-                        Refresh
-                    </button>
-                </div>
-                
-                <div class="table-wrapper data-preview-table">
-                    <table id="dataTable"></table>
-                </div>
-                
-                <div class="pagination">
-                    <div class="page-info" id="pageInfo"></div>
-                    <div class="page-buttons">
-                        <button id="firstBtn" class="page-btn" onclick="goToPage(0)">First</button>
-                        <button id="prevBtn" class="page-btn" onclick="changePage(-1)">Previous</button>
-                        <div class="page-jump">
-                            <span>Page</span>
-                            <input type="number" id="pageJumpInput" min="1" onkeypress="handlePageJump(event)">
-                            <span id="totalPagesText"></span>
+                    <!-- Metadata Tabs -->
+                    <div class="compact-section">
+                        <h3>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"></path>
+                            </svg>
+                            Metadata
+                        </h3>
+                        <div class="mini-tabs">
+                            <button class="mini-tab active" onclick="showMetaTab('general')">General</button>
+                            <button class="mini-tab" onclick="showMetaTab('schema')">Schema</button>
+                            <button class="mini-tab" onclick="showMetaTab('columns')">Stats</button>
                         </div>
-                        <button id="nextBtn" class="page-btn" onclick="changePage(1)">Next</button>
-                        <button id="lastBtn" class="page-btn" onclick="goToLastPage()">Last</button>
+                        
+                        <div id="metaGeneral" class="tab-content active">
+                            <div id="generalMetadata" class="compact-grid"></div>
+                        </div>
+                        
+                        <div id="metaSchema" class="tab-content">
+                            <div class="table-wrapper">
+                                <table id="schemaTable"></table>
+                            </div>
+                        </div>
+                        
+                        <div id="metaColumns" class="tab-content">
+                            <div class="table-wrapper">
+                                <table id="columnStatsTable"></table>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
 
-            <!-- Advanced Metadata -->
-            <div class="section metadata-section">
-                <h2>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="3"></circle>
-                        <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"></path>
-                    </svg>
-                    Metadata & Statistics
-                    <span class="section-badge secondary">Details</span>
-                </h2>
-                <div class="tabs">
-                    <button class="tab active" onclick="showMetaTab('general')">General</button>
-                    <button class="tab" onclick="showMetaTab('schema')">Schema</button>
-                    <button class="tab" onclick="showMetaTab('columns')">Column Stats</button>
-                    <button class="tab" onclick="showMetaTab('rowgroups')">Row Groups</button>
-                    <button class="tab" onclick="showMetaTab('raw')">Raw Metadata</button>
-                </div>
-                
-                <div id="metaGeneral" class="tab-content active">
-                    <div id="generalMetadata" class="info-grid"></div>
-                </div>
-                
-                <div id="metaSchema" class="tab-content">
-                    <div class="table-wrapper">
-                        <table id="schemaTable"></table>
+                    <!-- Export Options -->
+                    <div class="compact-section">
+                        <h3>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                            Export
+                        </h3>
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <button class="page-btn" onclick="exportData('csv')" style="justify-content: center; display: flex; align-items: center; gap: 6px;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path>
+                                </svg>
+                                CSV
+                            </button>
+                            <button class="page-btn" onclick="exportData('json')" style="justify-content: center; display: flex; align-items: center; gap: 6px;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path>
+                                </svg>
+                                JSON
+                            </button>
+                        </div>
                     </div>
                 </div>
-                
-                <div id="metaColumns" class="tab-content">
-                    <div class="table-wrapper">
-                        <table id="columnStatsTable"></table>
-                    </div>
-                </div>
-                
-                <div id="metaRowgroups" class="tab-content">
-                    <div class="table-wrapper">
-                        <table id="rowGroupTable"></table>
-                    </div>
-                </div>
-                
-                <div id="metaRaw" class="tab-content">
-                    <div class="metadata-raw" id="rawMetadata"></div>
-                </div>
-            </div>
 
-            <!-- Export Options -->
-            <div class="section">
-                <h2>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path>
-                        <polyline points="7 10 12 15 17 10"></polyline>
-                        <line x1="12" y1="15" x2="12" y2="3"></line>
-                    </svg>
-                    Export Data
-                </h2>
-                <div class="export-buttons">
-                    <button class="export-btn" onclick="exportData('csv')">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path>
-                        </svg>
-                        Export as CSV
-                    </button>
-                    <button class="export-btn" onclick="exportData('json')">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path>
-                        </svg>
-                        Export as JSON
-                    </button>
-                    <button class="export-btn" onclick="exportData('filtered-csv')">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="11" cy="11" r="8"></circle>
-                            <path d="M21 21l-4.35-4.35"></path>
-                        </svg>
-                        Export Filtered (CSV)
-                    </button>
-                    <button class="export-btn" onclick="exportData('schema')">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-                        </svg>
-                        Export Schema
-                    </button>
+                <!-- Main Content - Data Preview -->
+                <div class="main-content">
+                    <div class="data-preview-section">
+                        <h2>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 3h18v18H3zM21 9H3M9 21V9"></path>
+                            </svg>
+                            Data Preview
+                            <span class="section-badge">Live Data</span>
+                        </h2>
+                        
+                        <div class="table-controls">
+                            <div class="search-box">
+                                <input type="text" id="searchInput" class="search-input" placeholder="Search data...">
+                                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <path d="M21 21l-4.35-4.35"></path>
+                                </svg>
+                            </div>
+                            
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <select id="pageSizeSelect" onchange="changePageSize()" style="background: rgba(255, 255, 255, 0.1); color: white; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 6px; padding: 6px 10px; font-size: 0.8rem;">
+                                    <option value="25">25</option>
+                                    <option value="50" selected>50</option>
+                                    <option value="100">100</option>
+                                </select>
+                                
+                                <button class="page-btn" onclick="refreshData()">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="23 4 23 10 17 10"></polyline>
+                                        <polyline points="1 20 1 14 7 14"></polyline>
+                                        <path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 003.51 15"></path>
+                                    </svg>
+                                    Refresh
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="table-wrapper data-preview-table">
+                            <table id="dataTable"></table>
+                        </div>
+                        
+                        <div class="pagination">
+                            <div class="page-info" id="pageInfo"></div>
+                            <div style="display: flex; gap: 8px; align-items: center;">
+                                <button id="firstBtn" class="page-btn" onclick="goToPage(0)">First</button>
+                                <button id="prevBtn" class="page-btn" onclick="changePage(-1)">Prev</button>
+                                <input type="number" id="pageJumpInput" min="1" onkeypress="handlePageJump(event)" style="width: 50px; padding: 4px 6px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 4px; color: white; text-align: center; font-size: 0.8rem;">
+                                <span id="totalPagesText" style="font-size: 0.8rem; opacity: 0.8;"></span>
+                                <button id="nextBtn" class="page-btn" onclick="changePage(1)">Next</button>
+                                <button id="lastBtn" class="page-btn" onclick="goToLastPage()">Last</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1269,15 +1308,13 @@
                 updateProgress(50, 'Loading data...');
                 
                 // Read data with progress tracking
-                await new Promise((resolve) => {
-                    parquetRead({
-                        file: buffer,
-                        onComplete: (rows) => {
-                            state.data = rows;
-                            updateProgress(90, 'Finalizing...');
-                            resolve();
-                        }
-                    });
+                state.data = [];
+                await parquetRead({
+                    file: buffer,
+                    onComplete: (rows) => {
+                        state.data = rows;
+                        updateProgress(90, 'Finalizing...');
+                    }
                 });
 
                 updateProgress(100, 'Complete!');
@@ -1363,50 +1400,42 @@
             
             // Basic file info
             fileInfo.innerHTML = `
-                <div class="info-card">
-                    <div class="info-label">File Name</div>
-                    <div class="info-value">${file.name}</div>
+                <div class="compact-card">
+                    <div class="label">File Name</div>
+                    <div class="value">${file.name}</div>
                 </div>
-                <div class="info-card">
-                    <div class="info-label">File Size</div>
-                    <div class="info-value">${formatSize(file.size)}</div>
+                <div class="compact-card">
+                    <div class="label">File Size</div>
+                    <div class="value">${formatSize(file.size)}</div>
                 </div>
-                <div class="info-card">
-                    <div class="info-label">Total Rows</div>
-                    <div class="info-value">${rows.toLocaleString()}</div>
+                <div class="compact-card">
+                    <div class="label">Total Rows</div>
+                    <div class="value">${rows.toLocaleString()}</div>
                 </div>
-                <div class="info-card">
-                    <div class="info-label">Total Columns</div>
-                    <div class="info-value">${cols}</div>
-                </div>
-                <div class="info-card">
-                    <div class="info-label">Format Version</div>
-                    <div class="info-value">${state.metadata.version || 1}</div>
-                </div>
-                <div class="info-card">
-                    <div class="info-label">Row Groups</div>
-                    <div class="info-value">${state.metadata.row_groups?.length || 0}</div>
+                <div class="compact-card">
+                    <div class="label">Columns</div>
+                    <div class="value">${cols}</div>
                 </div>
             `;
 
             // Calculate statistics
             const stats = calculateDataStatistics();
             fileStats.innerHTML = `
-                <div class="stat-card">
-                    <div class="stat-number">${stats.nullCount.toLocaleString()}</div>
-                    <div class="stat-label">Null Values</div>
+                <div class="compact-card">
+                    <div class="label">Null Values</div>
+                    <div class="value">${stats.nullCount.toLocaleString()}</div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-number">${stats.numericColumns}</div>
-                    <div class="stat-label">Numeric Columns</div>
+                <div class="compact-card">
+                    <div class="label">Numeric</div>
+                    <div class="value">${stats.numericColumns}</div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-number">${stats.stringColumns}</div>
-                    <div class="stat-label">Text Columns</div>
+                <div class="compact-card">
+                    <div class="label">Text</div>
+                    <div class="value">${stats.stringColumns}</div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-number">${stats.uniqueValues.toLocaleString()}</div>
-                    <div class="stat-label">Unique Values</div>
+                <div class="compact-card">
+                    <div class="label">Unique</div>
+                    <div class="value">${stats.uniqueValues.toLocaleString()}</div>
                 </div>
             `;
         }
@@ -1464,29 +1493,21 @@
             const numRows = Number(state.metadata.num_rows);
             
             generalMeta.innerHTML = `
-                <div class="info-card">
-                    <div class="info-label">Format Version</div>
-                    <div class="info-value">${version}</div>
+                <div class="compact-card">
+                    <div class="label">Version</div>
+                    <div class="value">${version}</div>
                 </div>
-                <div class="info-card">
-                    <div class="info-label">Created By</div>
-                    <div class="info-value" title="${createdBy}">${createdBy.length > 30 ? createdBy.substring(0, 30) + '...' : createdBy}</div>
+                <div class="compact-card">
+                    <div class="label">Created By</div>
+                    <div class="value" title="${createdBy}">${createdBy.length > 20 ? createdBy.substring(0, 20) + '...' : createdBy}</div>
                 </div>
-                <div class="info-card">
-                    <div class="info-label">Row Groups</div>
-                    <div class="info-value">${rowGroups}</div>
+                <div class="compact-card">
+                    <div class="label">Row Groups</div>
+                    <div class="value">${rowGroups}</div>
                 </div>
-                <div class="info-card">
-                    <div class="info-label">Total Rows</div>
-                    <div class="info-value">${numRows.toLocaleString()}</div>
-                </div>
-                <div class="info-card">
-                    <div class="info-label">Schema Fields</div>
-                    <div class="info-value">${state.schema.children.length}</div>
-                </div>
-                <div class="info-card">
-                    <div class="info-label">Key-Value Metadata</div>
-                    <div class="info-value">${state.metadata.key_value_metadata?.length || 0} entries</div>
+                <div class="compact-card">
+                    <div class="label">Metadata</div>
+                    <div class="value">${state.metadata.key_value_metadata?.length || 0} entries</div>
                 </div>
             `;
 
@@ -1751,7 +1772,7 @@
 
         // Event handlers
         window.showMetaTab = function(tab) {
-            document.querySelectorAll('.tab').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.mini-tab').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
             
             event.target.classList.add('active');
