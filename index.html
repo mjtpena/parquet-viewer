@@ -1016,6 +1016,82 @@
             color: var(--vscode-text);
         }
 
+        .tree-view {
+            font-size: 0.75rem;
+            line-height: 1.3;
+        }
+
+        .tree-node {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .tree-item {
+            display: flex;
+            align-items: center;
+            padding: 2px 0;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            border-radius: 2px;
+        }
+
+        .tree-item:hover {
+            background: var(--vscode-hover);
+        }
+
+        .tree-toggle {
+            width: 12px;
+            height: 12px;
+            margin-right: 4px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            color: var(--vscode-text-muted);
+            user-select: none;
+        }
+
+        .tree-toggle.expandable::before {
+            content: '▶';
+            transition: transform 0.2s ease;
+        }
+
+        .tree-toggle.expanded::before {
+            transform: rotate(90deg);
+        }
+
+        .tree-label {
+            color: var(--vscode-text);
+            font-weight: 500;
+            margin-right: 6px;
+        }
+
+        .tree-value {
+            color: var(--vscode-text-muted);
+            font-weight: 400;
+            margin-left: auto;
+        }
+
+        .tree-children {
+            margin-left: 16px;
+            border-left: 1px solid var(--vscode-border);
+            padding-left: 8px;
+            margin-top: 2px;
+        }
+
+        .tree-children.collapsed {
+            display: none;
+        }
+
+        .tree-type-badge {
+            font-size: 0.65rem;
+            padding: 1px 4px;
+            border-radius: 2px;
+            margin-left: 4px;
+        }
+
         .theme-toggle {
             position: fixed;
             top: 20px;
@@ -1312,15 +1388,11 @@
                         </div>
                         
                         <div id="metaSchema" class="tab-content">
-                            <div class="table-wrapper">
-                                <table id="schemaTable"></table>
-                            </div>
+                            <div class="tree-view" id="schemaTree"></div>
                         </div>
                         
                         <div id="metaColumns" class="tab-content">
-                            <div class="table-wrapper">
-                                <table id="columnStatsTable"></table>
-                            </div>
+                            <div class="tree-view" id="columnStatsTree"></div>
                         </div>
                     </div>
 
@@ -1530,6 +1602,74 @@
         window.showKeyboardHelp = function() {
             const helpText = 'Keyboard Shortcuts:\n• ? - Show this help\n• Ctrl+F - Focus search\n• ←→ - Navigate pages\n• Ctrl+E - Export CSV\n• Esc - Reset view';
             showToast(helpText.replace(/\n/g, '<br>'), 'info', 6000);
+        }
+
+        // Tree view utilities
+        function createTreeNode(data, level = 0) {
+            const li = document.createElement('li');
+            li.className = 'tree-node';
+            
+            const item = document.createElement('div');
+            item.className = 'tree-item';
+            
+            const toggle = document.createElement('span');
+            toggle.className = 'tree-toggle';
+            
+            const label = document.createElement('span');
+            label.className = 'tree-label';
+            label.textContent = data.label;
+            
+            const value = document.createElement('span');
+            value.className = 'tree-value';
+            
+            if (data.value !== undefined) {
+                value.textContent = data.value;
+            }
+            
+            if (data.badge) {
+                const badge = document.createElement('span');
+                badge.className = `tree-type-badge type-${data.badge.toLowerCase()}`;
+                badge.textContent = data.badge;
+                value.appendChild(badge);
+            }
+            
+            item.appendChild(toggle);
+            item.appendChild(label);
+            item.appendChild(value);
+            li.appendChild(item);
+            
+            if (data.children && data.children.length > 0) {
+                toggle.classList.add('expandable');
+                
+                const children = document.createElement('ul');
+                children.className = 'tree-children collapsed';
+                
+                data.children.forEach(child => {
+                    children.appendChild(createTreeNode(child, level + 1));
+                });
+                
+                li.appendChild(children);
+                
+                item.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    toggle.classList.toggle('expanded');
+                    children.classList.toggle('collapsed');
+                });
+            }
+            
+            return li;
+        }
+
+        function createTreeView(container, data) {
+            const ul = document.createElement('ul');
+            ul.className = 'tree-view';
+            
+            data.forEach(item => {
+                ul.appendChild(createTreeNode(item));
+            });
+            
+            container.innerHTML = '';
+            container.appendChild(ul);
         }
 
         function setupEventListeners() {
@@ -1887,37 +2027,36 @@
         }
 
         function displaySchemaTable() {
-            const schemaTable = document.getElementById('schemaTable');
-            let html = '<thead><tr><th>Column Name</th><th>Type</th><th>Converted Type</th><th>Repetition</th><th>Nullable</th></tr></thead><tbody>';
-            
-            state.schema.children.forEach(col => {
+            const schemaContainer = document.getElementById('schemaTree');
+            const schemaData = state.schema.children.map(col => {
                 const type = col.element.type || 'UNKNOWN';
-                const convertedType = col.element.converted_type || '-';
+                const convertedType = col.element.converted_type || null;
                 const repetitionType = col.element.repetition_type || 'REQUIRED';
-                const nullable = repetitionType !== 'REQUIRED' ? 'Yes' : 'No';
+                const nullable = repetitionType !== 'REQUIRED';
                 
-                html += `
-                    <tr>
-                        <td><strong>${col.element.name}</strong></td>
-                        <td><span class="type-badge type-${type.toLowerCase()}">${type}</span></td>
-                        <td>${convertedType}</td>
-                        <td>${repetitionType}</td>
-                        <td>${nullable}</td>
-                    </tr>
-                `;
+                const children = [];
+                if (type) children.push({ label: 'Type', value: type, badge: type });
+                if (convertedType) children.push({ label: 'Converted Type', value: convertedType });
+                children.push({ label: 'Repetition', value: repetitionType });
+                children.push({ label: 'Nullable', value: nullable ? 'Yes' : 'No' });
+                
+                return {
+                    label: col.element.name,
+                    value: type,
+                    badge: type,
+                    children: children
+                };
             });
             
-            html += '</tbody>';
-            schemaTable.innerHTML = html;
+            createTreeView(schemaContainer, schemaData);
         }
 
         function displayColumnStats() {
-            const columnStatsTable = document.getElementById('columnStatsTable');
-            let html = '<thead><tr><th>Column</th><th>Type</th><th>Encodings</th><th>Compression</th><th>Uncompressed Size</th><th>Compressed Size</th><th>Ratio</th></tr></thead><tbody>';
+            const columnStatsContainer = document.getElementById('columnStatsTree');
             
             if (state.metadata.row_groups && state.metadata.row_groups.length > 0) {
                 const firstRowGroup = state.metadata.row_groups[0];
-                firstRowGroup.columns.forEach((col, idx) => {
+                const statsData = firstRowGroup.columns.map((col, idx) => {
                     const colSchema = state.schema.children[idx];
                     const encodings = col.encodings ? col.encodings.join(', ') : 'PLAIN';
                     const compression = col.compression || 'UNCOMPRESSED';
@@ -1925,24 +2064,26 @@
                     const totalCompressed = col.total_compressed_size || 0;
                     const ratio = totalUncompressed > 0 ? (totalCompressed / totalUncompressed * 100).toFixed(1) + '%' : '-';
                     
-                    html += `
-                        <tr>
-                            <td><strong>${colSchema.element.name}</strong></td>
-                            <td><span class="type-badge type-${colSchema.element.type.toLowerCase()}">${colSchema.element.type}</span></td>
-                            <td>
-                                ${encodings.split(', ').map(e => `<span class="encoding-badge">${e}</span>`).join('')}
-                            </td>
-                            <td><span class="compression-badge">${compression}</span></td>
-                            <td>${formatSize(totalUncompressed)}</td>
-                            <td>${formatSize(totalCompressed)}</td>
-                            <td>${ratio}</td>
-                        </tr>
-                    `;
+                    const children = [
+                        { label: 'Type', value: colSchema.element.type, badge: colSchema.element.type },
+                        { label: 'Encodings', value: encodings },
+                        { label: 'Compression', value: compression },
+                        { label: 'Uncompressed', value: formatSize(totalUncompressed) },
+                        { label: 'Compressed', value: formatSize(totalCompressed) },
+                        { label: 'Ratio', value: ratio }
+                    ];
+                    
+                    return {
+                        label: colSchema.element.name,
+                        value: `${compression} (${ratio})`,
+                        children: children
+                    };
                 });
+                
+                createTreeView(columnStatsContainer, statsData);
+            } else {
+                columnStatsContainer.innerHTML = '<div style="color: var(--vscode-text-muted); font-size: 0.75rem; padding: 8px;">No column statistics available</div>';
             }
-            
-            html += '</tbody>';
-            columnStatsTable.innerHTML = html;
         }
 
         function displayRowGroups() {
