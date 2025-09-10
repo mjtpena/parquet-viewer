@@ -1432,6 +1432,13 @@
 
         window.removeToast = removeToast;
 
+        function showLoading() {
+            document.getElementById('uploadSection').classList.add('hidden');
+            document.getElementById('loadingSection').classList.remove('hidden');
+            document.getElementById('errorSection').classList.add('hidden');
+            document.getElementById('resultsSection').classList.add('hidden');
+        }
+
         function showError(message) {
             document.getElementById('uploadSection').classList.remove('hidden');
             document.getElementById('loadingSection').classList.add('hidden');
