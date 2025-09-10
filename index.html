@@ -1567,29 +1567,28 @@
                     <div class="compact-section">
                         <h3>
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"></path>
-                                <polyline points="17,21 17,13 7,13 7,21"></polyline>
-                                <polyline points="7,3 7,8 15,8"></polyline>
+                                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
                             </svg>
-                            Save
+                            Download
                         </h3>
                         <div style="display: flex; flex-direction: column; gap: 4px;">
-                            <button class="page-btn" onclick="saveParquet()" style="justify-content: center; display: flex; align-items: center; gap: 4px; font-size: 0.75rem; padding: 4px 8px; display: none;" id="saveParquetBtn">
+                            <button class="page-btn" onclick="downloadModified()" style="justify-content: center; display: flex; align-items: center; gap: 4px; font-size: 0.75rem; padding: 4px 8px; display: none;" id="saveParquetBtn">
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"></path>
-                                    <polyline points="17,21 17,13 7,13 7,21"></polyline>
-                                    <polyline points="7,3 7,8 15,8"></polyline>
+                                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path>
+                                    <polyline points="7 10 12 15 17 10"></polyline>
+                                    <line x1="12" y1="15" x2="12" y2="3"></line>
                                 </svg>
-                                Save Parquet
+                                Download Modified
                             </button>
-                            <button class="page-btn" onclick="saveAsParquet()" style="justify-content: center; display: flex; align-items: center; gap: 4px; font-size: 0.75rem; padding: 4px 8px;">
+                            <button class="page-btn" onclick="downloadCopy()" style="justify-content: center; display: flex; align-items: center; gap: 4px; font-size: 0.75rem; padding: 4px 8px;">
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"></path>
-                                    <polyline points="17,21 17,13 7,13 7,21"></polyline>
-                                    <polyline points="7,3 7,8 15,8"></polyline>
-                                    <path d="m9 15 2-2 2 2"></path>
+                                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path>
+                                    <polyline points="7 10 12 15 17 10"></polyline>
+                                    <line x1="12" y1="15" x2="12" y2="3"></line>
                                 </svg>
-                                Save As Parquet...
+                                Download Copy
                             </button>
                         </div>
                     </div>
@@ -1733,6 +1732,8 @@
 
     <script type="module">
         import { parquetMetadata, parquetRead, parquetSchema } from 'https://cdn.jsdelivr.net/npm/hyparquet@1.16.0/+esm';
+        import { tableFromJSON, tableToIPC } from 'https://cdn.jsdelivr.net/npm/apache-arrow@17.0.0/+esm';
+        import initWasm, { writeParquet, Table, WriterPropertiesBuilder, Compression } from 'https://cdn.jsdelivr.net/npm/parquet-wasm@0.6.1/+esm';
         
         // Global state
         let state = {
@@ -1818,7 +1819,7 @@
         }
 
         window.showKeyboardHelp = function() {
-            const helpText = 'Keyboard Shortcuts:\n• ? - Show this help\n• Ctrl+F - Focus search\n• ←→ - Navigate pages\n• Ctrl+S - Save Parquet\n• Ctrl+E - Export CSV\n• Esc - Reset view';
+            const helpText = 'Keyboard Shortcuts:\n• ? - Show this help\n• Ctrl+F - Focus search\n• ←→ - Navigate pages\n• Ctrl+S - Download Modified\n• Ctrl+E - Export CSV\n• Esc - Reset view';
             showToast(helpText.replace(/\n/g, '<br>'), 'info', 6000);
         }
 
@@ -1908,7 +1909,7 @@
         }
 
         function setupKeyboardShortcuts() {
-            document.addEventListener('keydown', (e) => {
+            document.addEventListener('keydown', async (e) => {
                 // Ctrl+F - Focus search
                 if (e.ctrlKey && e.key === 'f') {
                     e.preventDefault();
@@ -1921,13 +1922,17 @@
                 else if (e.key === 'ArrowRight' && !e.target.matches('input')) {
                     changePage(1);
                 }
-                // Ctrl+S - Save Parquet
+                // Ctrl+S - Download Modified
                 else if (e.ctrlKey && e.key === 's') {
                     e.preventDefault();
                     if (state.modifiedCells.size > 0) {
-                        saveParquet();
+                        try {
+                            await downloadModified();
+                        } catch (error) {
+                            // Error handling is already done in downloadModified
+                        }
                     } else {
-                        showToast('No modifications to save', 'info');
+                        showToast('No modifications to download', 'info');
                     }
                 }
                 // Ctrl+E - Export CSV
@@ -2697,37 +2702,108 @@
             document.getElementById('searchInput').value = '';
         }
 
-        window.saveParquet = function() {
+        window.downloadModified = async function() {
             if (state.modifiedCells.size === 0) {
-                showToast('No modifications to save', 'info');
+                showToast('No modifications to download', 'info');
                 return;
             }
             
-            // Use the current filename (overwrite)
-            const filename = state.selectedFile.name;
-            createParquetFile(state.filteredData, filename);
-            showToast(`Saved ${state.modifiedCells.size} modifications to ${filename}`, 'success');
+            try {
+                // Create a modified version with clear naming
+                const baseName = state.selectedFile.name.replace('.parquet', '');
+                const filename = `${baseName}_modified.parquet`;
+                await createParquetFile(state.filteredData, filename);
+            } catch (error) {
+                console.error('Download failed:', error);
+                showToast('Download failed. Please try again.', 'error');
+            }
         }
         
-        window.saveAsParquet = function() {
-            const baseName = state.selectedFile.name.replace('.parquet', '');
-            const timestamp = new Date().toISOString().slice(0, 19).replace(/[:-]/g, '');
-            const filename = `${baseName}_${timestamp}.parquet`;
-            
-            createParquetFile(state.filteredData, filename);
-            showToast(`Saved as ${filename}`, 'success');
+        window.downloadCopy = async function() {
+            try {
+                // Always use current data (modified or not)
+                const baseName = state.selectedFile.name.replace('.parquet', '');
+                const timestamp = new Date().toISOString().slice(0, 19).replace(/[:-]/g, '');
+                const filename = `${baseName}_copy_${timestamp}.parquet`;
+                
+                const dataToSave = state.modifiedCells.size > 0 ? state.filteredData : state.data;
+                await createParquetFile(dataToSave, filename);
+            } catch (error) {
+                console.error('Download failed:', error);
+                showToast('Download failed. Please try again.', 'error');
+            }
         }
         
-        function createParquetFile(data, filename) {
-            // For now, we'll create a placeholder function since hyparquet is read-only
-            // In a real implementation, we'd use a Parquet writer library like parquet-js
+        async function createParquetFile(data, filename) {
+            showToast('Creating Parquet file...', 'info');
             
-            showToast('Parquet writing feature coming soon. Use Export CSV for now.', 'warning', 5000);
+            try {
+                // Convert our data to Apache Arrow format
+                const arrowTable = createArrowTable(data);
+                
+                // Use parquet-wasm to write the Parquet file
+                const parquetBytes = await writeParquetFile(arrowTable);
+                
+                // Download the file
+                const blob = new Blob([parquetBytes], { type: 'application/octet-stream' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                a.click();
+                URL.revokeObjectURL(url);
+                
+                showToast(`Successfully downloaded ${filename}`, 'success');
+                
+            } catch (error) {
+                console.error('Error creating Parquet file:', error);
+                showToast(`Failed to create Parquet file: ${error.message}`, 'error', 5000);
+                throw error; // Re-throw to prevent silent failures
+            }
+        }
+        
+        let wasmInitialized = false;
+        
+        async function ensureWasmInitialized() {
+            if (!wasmInitialized) {
+                await initWasm();
+                wasmInitialized = true;
+            }
+        }
+        
+        function createArrowTable(data) {
+            if (!data || data.length === 0) {
+                throw new Error('No data to create Arrow table');
+            }
             
-            // Temporary fallback - export as CSV with clear naming
-            const csvData = convertToCSV(data);
-            const fallbackName = filename.replace('.parquet', '_modified.csv');
-            download(csvData, fallbackName, 'text/csv');
+            // Use Apache Arrow's tableFromJSON to create a table from our data
+            return tableFromJSON(data);
+        }
+        
+        async function writeParquetFile(arrowTable) {
+            try {
+                // Initialize WebAssembly if not done already
+                await ensureWasmInitialized();
+                
+                // Convert Arrow table to IPC stream format
+                const ipcStream = tableToIPC(arrowTable, 'stream');
+                
+                // Convert to WebAssembly table
+                const wasmTable = Table.fromIPCStream(ipcStream);
+                
+                // Create writer properties for optimal Parquet output
+                const writerProperties = new WriterPropertiesBuilder()
+                    .setCompression(Compression.SNAPPY)
+                    .build();
+                
+                // Write the Arrow table to Parquet format
+                const parquetBytes = writeParquet(wasmTable, writerProperties);
+                
+                return parquetBytes;
+            } catch (error) {
+                console.error('Parquet-wasm error:', error);
+                throw new Error(`Parquet writing failed: ${error.message}`);
+            }
         }
 
         window.exportData = function(format) {
