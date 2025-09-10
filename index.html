@@ -7,20 +7,64 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
     <style>
         :root {
-            --primary-color: #667eea;
-            --secondary-color: #764ba2;
-            --accent-color: #4f46e5;
-            --success-color: #10b981;
-            --warning-color: #f59e0b;
-            --error-color: #ef4444;
-            --text-light: rgba(255, 255, 255, 0.9);
-            --text-muted: rgba(255, 255, 255, 0.7);
-            --bg-glass: rgba(255, 255, 255, 0.1);
-            --bg-glass-hover: rgba(255, 255, 255, 0.15);
-            --border-light: rgba(255, 255, 255, 0.2);
+            /* VSCode Dark Theme Colors */
+            --vscode-bg: #1e1e1e;
+            --vscode-sidebar-bg: #252526;
+            --vscode-editor-bg: #1f1f1f;
+            --vscode-panel-bg: #2d2d30;
+            --vscode-border: #3e3e42;
+            --vscode-text: #cccccc;
+            --vscode-text-muted: #969696;
+            --vscode-text-active: #ffffff;
+            --vscode-accent: #007acc;
+            --vscode-accent-hover: #1177bb;
+            --vscode-success: #4ec9b0;
+            --vscode-warning: #dcdcaa;
+            --vscode-error: #f14c4c;
+            --vscode-modified: #e2c08d;
+            --vscode-added: #73c991;
+            --vscode-selection: #264f78;
+            --vscode-hover: #2a2d2e;
+            --vscode-focus: #007fd4;
+            --vscode-button: #0e639c;
+            --vscode-button-hover: #1177bb;
+            --vscode-input-bg: #3c3c3c;
+            --vscode-dropdown: #3c3c3c;
+            
+            /* Light theme will be added as .light-theme class */
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.2);
+            --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .light-theme {
+            /* VSCode Light Theme Colors */
+            --vscode-bg: #ffffff;
+            --vscode-sidebar-bg: #f3f3f3;
+            --vscode-editor-bg: #ffffff;
+            --vscode-panel-bg: #f8f8f8;
+            --vscode-border: #e5e5e5;
+            --vscode-text: #333333;
+            --vscode-text-muted: #6c6c6c;
+            --vscode-text-active: #000000;
+            --vscode-accent: #0078d4;
+            --vscode-accent-hover: #106ebe;
+            --vscode-success: #16825d;
+            --vscode-warning: #795e26;
+            --vscode-error: #cd3131;
+            --vscode-modified: #b5650d;
+            --vscode-added: #587c0c;
+            --vscode-selection: #add6ff;
+            --vscode-hover: #f0f0f0;
+            --vscode-focus: #005fb8;
+            --vscode-button: #0078d4;
+            --vscode-button-hover: #106ebe;
+            --vscode-input-bg: #ffffff;
+            --vscode-dropdown: #ffffff;
+            
             --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
-            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.06);
         }
 
         * {
@@ -30,19 +74,20 @@
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'SF Mono', Monaco, Inconsolata, 'Roboto Mono', 'Source Code Pro', monospace;
+            background: var(--vscode-bg);
             min-height: 100vh;
-            color: var(--text-light);
+            color: var(--vscode-text);
             padding: 10px;
             line-height: 1.4;
             overflow-x: hidden;
+            transition: background-color 0.2s ease, color 0.2s ease;
         }
         
         .container {
             max-width: 1600px;
             margin: 0 auto;
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
@@ -57,10 +102,8 @@
             font-size: 1.8rem;
             margin-bottom: 6px;
             font-weight: 700;
-            background: linear-gradient(45deg, #fff, #e0e7ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: var(--vscode-text-active);
+            font-family: inherit;
         }
         
         .subtitle {
@@ -80,37 +123,37 @@
         }
 
         .badge {
-            background: var(--bg-glass);
+            background: var(--vscode-panel-bg);
             padding: 6px 12px;
-            border-radius: 20px;
-            border: 1px solid var(--border-light);
-            backdrop-filter: blur(10px);
+            border-radius: 4px;
+            border: 1px solid var(--vscode-border);
+            color: var(--vscode-text-muted);
+            font-size: 0.75rem;
         }
         
         .upload-area {
-            background: var(--bg-glass);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
+            background: var(--vscode-editor-bg);
+            border-radius: 8px;
             padding: 40px 20px;
             text-align: center;
-            border: 2px dashed var(--border-light);
+            border: 2px dashed var(--vscode-border);
             transition: all 0.3s ease;
             margin-bottom: 30px;
             position: relative;
         }
         
         .upload-area:hover {
-            background: var(--bg-glass-hover);
-            border-color: rgba(255, 255, 255, 0.5);
+            background: var(--vscode-hover);
+            border-color: var(--vscode-accent);
             transform: translateY(-2px);
             box-shadow: var(--shadow-lg);
         }
         
         .upload-area.dragover {
-            background: rgba(255, 255, 255, 0.2);
-            border-color: white;
+            background: var(--vscode-selection);
+            border-color: var(--vscode-accent);
             transform: scale(1.02);
-            box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 20px var(--vscode-accent);
         }
         
         .upload-icon {
@@ -143,37 +186,36 @@
         }
         
         .btn {
-            background: var(--bg-glass);
-            border: 2px solid white;
-            color: white;
-            padding: 12px 30px;
-            font-size: 1rem;
-            border-radius: 30px;
+            background: var(--vscode-button);
+            border: 1px solid var(--vscode-button);
+            color: var(--vscode-text-active);
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            border-radius: 4px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 600;
+            transition: all 0.2s ease;
+            font-weight: 500;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             text-decoration: none;
+            font-family: inherit;
         }
         
         .btn:hover {
-            background: white;
-            color: var(--primary-color);
-            transform: scale(1.05);
-            box-shadow: var(--shadow-md);
+            background: var(--vscode-button-hover);
+            border-color: var(--vscode-button-hover);
         }
 
         .btn-secondary {
-            background: var(--accent-color);
-            border-color: var(--accent-color);
+            background: var(--vscode-panel-bg);
+            border-color: var(--vscode-border);
+            color: var(--vscode-text);
         }
 
         .btn-secondary:hover {
-            background: #3730a3;
-            border-color: #3730a3;
-            color: white;
+            background: var(--vscode-hover);
+            border-color: var(--vscode-accent);
         }
 
         .btn-small {
@@ -256,8 +298,9 @@
             display: grid;
             grid-template-columns: 300px 1fr;
             gap: 15px;
-            height: calc(100vh - 140px);
+            height: calc(100vh - 40px);
             overflow: hidden;
+            flex: 1;
         }
 
         .sidebar {
@@ -274,11 +317,10 @@
         }
 
         .compact-section {
-            background: var(--bg-glass);
-            backdrop-filter: blur(10px);
-            border-radius: 10px;
-            padding: 15px;
-            border: 1px solid var(--border-light);
+            background: var(--vscode-sidebar-bg);
+            border-radius: 6px;
+            padding: 12px;
+            border: 1px solid var(--vscode-border);
             box-shadow: var(--shadow-sm);
         }
 
@@ -293,11 +335,11 @@
         }
         
         .data-preview-section {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.08));
-            border: 2px solid rgba(99, 102, 241, 0.3);
-            box-shadow: 0 8px 32px rgba(99, 102, 241, 0.1);
-            border-radius: 12px;
-            padding: 20px;
+            background: var(--vscode-editor-bg);
+            border: 1px solid var(--vscode-border);
+            box-shadow: var(--shadow-md);
+            border-radius: 6px;
+            padding: 16px;
             display: flex;
             flex-direction: column;
             overflow: hidden;
@@ -305,13 +347,14 @@
         }
 
         .data-preview-section h2 {
-            font-size: 1.4rem;
-            color: var(--accent-color);
-            margin-bottom: 15px;
+            font-size: 1.2rem;
+            color: var(--vscode-text-active);
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
             gap: 10px;
             font-weight: 600;
+            font-family: inherit;
         }
 
         .compact-grid {
@@ -902,6 +945,42 @@
             font-size: 0.9rem;
         }
 
+        .mode-toggle {
+            display: flex;
+            gap: 2px;
+            background: var(--vscode-panel-bg);
+            border-radius: 4px;
+            padding: 2px;
+            border: 1px solid var(--vscode-border);
+            margin-left: auto;
+        }
+
+        .mode-btn {
+            background: transparent;
+            border: none;
+            color: var(--vscode-text-muted);
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            border-radius: 2px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-family: inherit;
+            font-weight: 500;
+        }
+
+        .mode-btn:hover {
+            background: var(--vscode-hover);
+            color: var(--vscode-text);
+        }
+
+        .mode-btn.active {
+            background: var(--vscode-accent);
+            color: var(--vscode-text-active);
+        }
+
         .theme-toggle {
             position: fixed;
             top: 20px;
@@ -1066,8 +1145,26 @@
 <body>
     <div class="container">
         <header>
-            <h1>⚡ Parquet Viewer</h1>
-            <div class="subtitle">Analyze Parquet files instantly in your browser</div>
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+                <div></div>
+                <div style="text-align: center; flex: 1;">
+                    <h1>⚡ Parquet Viewer</h1>
+                    <div class="subtitle">Analyze Parquet files instantly in your browser</div>
+                </div>
+                <button id="themeToggle" class="btn btn-small" onclick="toggleTheme()" title="Toggle light/dark theme">
+                    <svg id="themeIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
             <div class="privacy-badge">
                 <span class="badge">🔒 100% Private</span>
                 <span class="badge">📊 No Upload Required</span>
@@ -1233,7 +1330,22 @@
                                 <path d="M3 3h18v18H3zM21 9H3M9 21V9"></path>
                             </svg>
                             Data Preview
-                            <span class="section-badge">Live Data</span>
+                            <div class="mode-toggle">
+                                <button id="viewModeBtn" class="mode-btn active" onclick="setMode('view')">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                    </svg>
+                                    View
+                                </button>
+                                <button id="editModeBtn" class="mode-btn" onclick="setMode('edit')">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path>
+                                        <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                    </svg>
+                                    Edit
+                                </button>
+                            </div>
                         </h2>
                         
                         <div class="table-controls">
@@ -1311,7 +1423,8 @@
             processingStartTime: null,
             selectedFile: null,
             modifiedCells: new Set(),
-            isEditing: false
+            isEditing: false,
+            currentMode: 'view'
         };
 
         // Initialize app
@@ -1320,6 +1433,68 @@
         function initializeApp() {
             setupEventListeners();
             setupKeyboardShortcuts();
+            initializeTheme();
+        }
+
+        function initializeTheme() {
+            // Check for saved theme preference or default to dark
+            const savedTheme = localStorage.getItem('parquet-viewer-theme') || 'dark';
+            if (savedTheme === 'light') {
+                document.body.classList.add('light-theme');
+                updateThemeIcon(true);
+            }
+        }
+
+        window.toggleTheme = function() {
+            const isLight = document.body.classList.toggle('light-theme');
+            localStorage.setItem('parquet-viewer-theme', isLight ? 'light' : 'dark');
+            updateThemeIcon(isLight);
+        }
+
+        function updateThemeIcon(isLight) {
+            const themeIcon = document.getElementById('themeIcon');
+            if (isLight) {
+                // Moon icon for light theme (to switch to dark)
+                themeIcon.innerHTML = `
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                `;
+            } else {
+                // Sun icon for dark theme (to switch to light)
+                themeIcon.innerHTML = `
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                `;
+            }
+        }
+
+        window.setMode = function(mode) {
+            state.currentMode = mode;
+            
+            // Update button states
+            document.getElementById('viewModeBtn').classList.toggle('active', mode === 'view');
+            document.getElementById('editModeBtn').classList.toggle('active', mode === 'edit');
+            
+            // Show/hide edit features
+            const cells = document.querySelectorAll('.cell-editable');
+            cells.forEach(cell => {
+                if (mode === 'edit') {
+                    cell.style.cursor = 'pointer';
+                    cell.setAttribute('onclick', 'editCell(this)');
+                } else {
+                    cell.style.cursor = 'default';
+                    cell.removeAttribute('onclick');
+                }
+            });
+            
+            // Update toast message
+            showToast(`Switched to ${mode} mode`, 'info', 1500);
         }
 
         function setupEventListeners() {
@@ -1847,12 +2022,14 @@
                     const cellId = `cell-${start + index}-${col}`;
                     const isModified = state.modifiedCells.has(cellId);
                     const modifiedClass = isModified ? ' cell-modified' : '';
-                    html += `<td class="${cellClass} cell-editable${modifiedClass}" 
+                    const editableClass = state.currentMode === 'edit' ? ' cell-editable' : '';
+                    const clickHandler = state.currentMode === 'edit' ? 'onclick="editCell(this)"' : '';
+                    html += `<td class="${cellClass}${editableClass}${modifiedClass}" 
                               title="${escapeHtml(String(value))}" 
                               data-row="${start + index}" 
                               data-col="${col}" 
                               data-cell-id="${cellId}"
-                              onclick="editCell(this)">${escapeHtml(String(displayValue))}</td>`;
+                              ${clickHandler}>${escapeHtml(String(displayValue))}</td>`;
                 });
                 html += '</tr>';
             });
@@ -2020,7 +2197,7 @@
         }
 
         window.editCell = function(cell) {
-            if (state.isEditing) return; // Prevent multiple edits
+            if (state.isEditing || state.currentMode !== 'edit') return; // Prevent multiple edits and only allow in edit mode
             
             const row = parseInt(cell.dataset.row);
             const col = cell.dataset.col;
