@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Format Data Viewer - Testing</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+            color: #333;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            background: white;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .file-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .file-item {
+            border: 2px dashed #ddd;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        .file-item:hover {
+            border-color: #007acc;
+            background: #f8f9fa;
+        }
+        .file-item.success { border-color: #28a745; background: #f8fff9; }
+        .file-item.error { border-color: #dc3545; background: #fff8f8; }
+        .format-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            margin: 5px;
+        }
+        .format-parquet { background: #e3f2fd; color: #1976d2; }
+        .format-arrow { background: #f3e5f5; color: #7b1fa2; }
+        .format-avro { background: #e8f5e8; color: #388e3c; }
+        .format-jsonl { background: #fff3e0; color: #f57c00; }
+        .format-orc { background: #fce4ec; color: #c2185b; }
+        .format-delta { background: #e1f5fe; color: #0288d1; }
+        .format-iceberg { background: #f3e5f5; color: #7b1fa2; }
+        button {
+            background: #007acc;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+        }
+        button:hover { background: #1177bb; }
+        #console {
+            background: #1e1e1e;
+            color: #cccccc;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🗂️ Multi-Format Data Viewer - Testing Suite</h1>
+        <p>Comprehensive testing of format detection and processing capabilities</p>
+    </div>
+
+    <div class="test-section">
+        <h2>📋 Available Test Files</h2>
+        <div class="file-list">
+            <div class="file-item" data-format="jsonl">
+                <strong>sample.jsonl</strong><br>
+                <span class="format-badge format-jsonl">JSONL</span><br>
+                100 employee records in JSON Lines format
+            </div>
+            <div class="file-item" data-format="jsonl">
+                <strong>sample.ndjson</strong><br>
+                <span class="format-badge format-jsonl">NDJSON</span><br>
+                Same data in Newline Delimited JSON format
+            </div>
+            <div class="file-item" data-format="parquet">
+                <strong>iris.parquet</strong><br>
+                <span class="format-badge format-parquet">PARQUET</span><br>
+                Classic Iris dataset in Parquet format
+            </div>
+            <div class="file-item" data-format="parquet">
+                <strong>nyc_taxi.parquet</strong><br>
+                <span class="format-badge format-parquet">PARQUET</span><br>
+                Real NYC Taxi data (~45MB)
+            </div>
+            <div class="file-item" data-format="arrow">
+                <strong>sample.arrow</strong><br>
+                <span class="format-badge format-arrow">ARROW</span><br>
+                Apache Arrow format test file
+            </div>
+            <div class="file-item" data-format="avro">
+                <strong>users.avro</strong><br>
+                <span class="format-badge format-avro">AVRO</span><br>
+                Apache Avro format with user data
+            </div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>🚀 Automated Testing</h2>
+        <p>Run comprehensive tests to verify format detection and processing capabilities.</p>
+        <button onclick="runTests()">🧪 Run All Tests</button>
+        <button onclick="clearConsole()">🗑️ Clear Console</button>
+        <button onclick="window.open('http://localhost:8081/', '_blank')">🔗 Open Main App</button>
+    </div>
+
+    <div class="test-section">
+        <h2>📊 Test Console</h2>
+        <div id="console">Ready to run tests...\nClick "Run All Tests" to start validation.\n</div>
+    </div>
+
+    <script type="module">
+        import { FormatDetector } from './src/core/FormatDetector.js';
+        import { FormatRegistry } from './src/formats/base/FormatRegistry.js';
+
+        let detector, registry;
+
+        // Initialize format system
+        try {
+            detector = new FormatDetector();
+            registry = new FormatRegistry();
+            log('✅ Multi-Format Data Viewer initialized successfully');
+            log(`📋 Supported formats: ${registry.getSupportedFormats().join(', ')}`);
+        } catch (error) {
+            log(`❌ Initialization failed: ${error.message}`);
+        }
+
+        function log(message) {
+            const console = document.getElementById('console');
+            console.textContent += new Date().toLocaleTimeString() + ' - ' + message + '\n';
+            console.scrollTop = console.scrollHeight;
+        }
+
+        window.clearConsole = function() {
+            document.getElementById('console').textContent = 'Console cleared.\n';
+        };
+
+        window.runTests = async function() {
+            log('🚀 Starting Multi-Format Data Viewer Tests');
+            log('='.repeat(50));
+
+            // Test 1: Format Registration
+            log('\n📋 Test 1: Format Registration');
+            try {
+                const supportedFormats = registry.getSupportedFormats();
+                const expectedFormats = ['parquet', 'arrow', 'feather', 'avro', 'jsonl', 'ndjson', 'orc', 'delta', 'iceberg'];
+                
+                log(`   Supported formats: ${supportedFormats.join(', ')}`);
+                
+                const missingFormats = expectedFormats.filter(f => !supportedFormats.includes(f));
+                
+                if (missingFormats.length === 0) {
+                    log('   ✅ All expected formats registered');
+                } else {
+                    log(`   ❌ Missing formats: ${missingFormats.join(', ')}`);
+                }
+            } catch (error) {
+                log(`   ❌ Registration test failed: ${error.message}`);
+            }
+
+            // Test 2: File Detection and Processing
+            const testFiles = [
+                { path: '/test-files/sample.jsonl', expectedFormat: 'jsonl' },
+                { path: '/test-files/sample.ndjson', expectedFormat: 'jsonl' },
+                { path: '/test-files/iris.parquet', expectedFormat: 'parquet' },
+                { path: '/test-files/sample.arrow', expectedFormat: 'arrow' },
+                { path: '/test-files/users.avro', expectedFormat: 'avro' }
+            ];
+
+            log('\n🔍 Test 2: Format Detection & Processing');
+            
+            for (const testFile of testFiles) {
+                try {
+                    log(`\n   Testing ${testFile.path}...`);
+                    
+                    const response = await fetch(`http://localhost:8081${testFile.path}`);
+                    if (!response.ok) {
+                        log(`   ⚠️ File not found, skipping`);
+                        continue;
+                    }
+                    
+                    const buffer = await response.arrayBuffer();
+                    const file = new File([buffer], testFile.path.split('/').pop());
+                    
+                    // Test detection
+                    const detectedFormat = await detector.detect(file);
+                    if (detectedFormat === testFile.expectedFormat) {
+                        log(`   ✅ Detected as ${detectedFormat}`);
+                        
+                        // Update UI
+                        const fileItem = document.querySelector(`[data-format="${testFile.expectedFormat}"]`);
+                        if (fileItem) {
+                            fileItem.classList.add('success');
+                        }
+                    } else {
+                        log(`   ❌ Expected ${testFile.expectedFormat}, got ${detectedFormat}`);
+                        
+                        const fileItem = document.querySelector(`[data-format="${testFile.expectedFormat}"]`);
+                        if (fileItem) {
+                            fileItem.classList.add('error');
+                        }
+                    }
+                    
+                    // Test processing
+                    if (detectedFormat !== 'unknown') {
+                        try {
+                            const Handler = registry.getHandler(detectedFormat);
+                            if (Handler) {
+                                const handler = new Handler();
+                                const data = await handler.readData(file);
+                                const rowCount = Array.isArray(data) ? data.length : 0;
+                                log(`   ✅ Processed successfully (${rowCount} rows)`);
+                            } else {
+                                log(`   ⚠️ No handler found for ${detectedFormat}`);
+                            }
+                        } catch (processError) {
+                            log(`   ⚠️ Processing failed: ${processError.message}`);
+                        }
+                    }
+                    
+                } catch (error) {
+                    log(`   ❌ Test failed: ${error.message}`);
+                }
+            }
+
+            // Test 3: Error Handling
+            log('\n🛡️ Test 3: Error Handling');
+            try {
+                const invalidFile = new File(['invalid content'], 'test.unknown');
+                const format = await detector.detect(invalidFile);
+                
+                if (format === 'unknown') {
+                    log('   ✅ Correctly identifies unknown format');
+                } else {
+                    log(`   ❌ Should return "unknown", got "${format}"`);
+                }
+            } catch (error) {
+                log(`   ✅ Correctly handles errors: ${error.message}`);
+            }
+
+            log('\n🎯 Testing Complete!');
+            log('='.repeat(50));
+            log('You can now manually test by opening the main application.');
+            log('Try dragging and dropping files from test-files/ directory.');
+        };
+
+        // Make functions available globally
+        window.detector = detector;
+        window.registry = registry;
+        window.log = log;
+    </script>
+</body>
+</html>
