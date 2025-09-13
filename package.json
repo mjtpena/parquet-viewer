@@ -1,0 +1,150 @@
+{
+  "name": "multi-format-data-viewer",
+  "version": "2.0.0",
+  "description": "Client-side data viewer supporting multiple formats: Parquet, Arrow, Avro, ORC, Delta Lake, JSON Lines",
+  "type": "module",
+  "main": "index.html",
+  "scripts": {
+    "dev": "python3 -m http.server 8000",
+    "serve": "python3 -m http.server 8000",
+    "test": "echo 'Testing via browser - open index.html'",
+    "lint": "echo 'No linting configured - using browser native ES modules'",
+    "build": "echo 'No build step required - using native ES modules'",
+    "format-test": "echo 'Run format detection tests via browser'"
+  },
+  "keywords": [
+    "parquet",
+    "arrow",
+    "avro",
+    "orc", 
+    "delta-lake",
+    "jsonl",
+    "data-viewer",
+    "client-side",
+    "file-viewer",
+    "data-analysis"
+  ],
+  "author": "Data Viewer Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/parquet-viewer.git"
+  },
+  "dependencies": {
+    "apache-arrow": "^14.0.0",
+    "avsc": "^5.7.0",
+    "hyparquet": "^1.16.0",
+    "localforage": "^1.10.0"
+  },
+  "devDependencies": {
+    "@types/wicg-file-system-access": "^2023.10.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "browserslist": [
+    "Chrome >= 86",
+    "Firefox >= 111", 
+    "Safari >= 15.4",
+    "Edge >= 86"
+  ],
+  "files": [
+    "index.html",
+    "src/",
+    "tests/",
+    "README.md",
+    "LICENSE"
+  ],
+  "capabilities": {
+    "formats": [
+      {
+        "name": "Apache Parquet",
+        "extensions": [".parquet"],
+        "status": "full-support",
+        "features": ["read", "metadata", "streaming", "statistics"]
+      },
+      {
+        "name": "Apache Arrow",
+        "extensions": [".arrow", ".feather"],
+        "status": "full-support", 
+        "features": ["read", "metadata", "streaming", "statistics"]
+      },
+      {
+        "name": "Apache Avro",
+        "extensions": [".avro"],
+        "status": "basic-support",
+        "features": ["read", "metadata", "basic-streaming"],
+        "limitations": ["Complex schemas may not parse correctly"]
+      },
+      {
+        "name": "JSON Lines",
+        "extensions": [".jsonl", ".ndjson"],
+        "status": "full-support",
+        "features": ["read", "streaming", "schema-inference", "validation"]
+      },
+      {
+        "name": "Apache ORC",
+        "extensions": [".orc"],
+        "status": "limited-support",
+        "features": ["metadata-only", "format-detection"],
+        "limitations": ["Requires specialized libraries for full data reading"]
+      },
+      {
+        "name": "Delta Lake",
+        "extensions": ["directory"],
+        "status": "basic-support",
+        "features": ["transaction-log", "metadata", "version-history"],
+        "requirements": ["File System Access API"]
+      }
+    ],
+    "storage": [
+      {
+        "name": "Local Files",
+        "status": "full-support",
+        "requirements": ["File System Access API or file input"]
+      },
+      {
+        "name": "Local Directories", 
+        "status": "full-support",
+        "requirements": ["File System Access API (Chrome 86+)"]
+      },
+      {
+        "name": "Google Drive",
+        "status": "planned",
+        "requirements": ["OAuth 2.0 setup"]
+      },
+      {
+        "name": "Dropbox",
+        "status": "planned", 
+        "requirements": ["OAuth 2.0 setup"]
+      }
+    ]
+  },
+  "browser_compatibility": {
+    "file_system_access": {
+      "chrome": "86+",
+      "edge": "86+",
+      "firefox": "not supported",
+      "safari": "not supported"
+    },
+    "es_modules": {
+      "chrome": "61+",
+      "firefox": "60+", 
+      "safari": "10.1+",
+      "edge": "79+"
+    },
+    "web_workers": {
+      "chrome": "4+",
+      "firefox": "3.5+",
+      "safari": "4+", 
+      "edge": "12+"
+    }
+  },
+  "performance_targets": {
+    "file_size": "500MB max without browser crashes",
+    "rows": "Process 100k rows in <3 seconds",
+    "formats": "5+ format support",
+    "detection": "95%+ format detection accuracy",
+    "memory": "Efficient streaming for large files"
+  }
+}
