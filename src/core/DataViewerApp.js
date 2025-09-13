@@ -11,6 +11,7 @@ import { AvroFormat } from '../formats/single/AvroFormat.js';
 import { JSONLFormat } from '../formats/single/JSONLFormat.js';
 import { ORCFormat } from '../formats/single/ORCFormat.js';
 import { DeltaLakeFormat } from '../formats/table/DeltaLakeFormat.js';
+import { IcebergFormat } from '../formats/table/IcebergFormat.js';
 
 export class DataViewerApp {
   constructor() {
@@ -41,6 +42,7 @@ export class DataViewerApp {
     this.registry.register('ndjson', JSONLFormat); // NDJSON uses JSONL format
     this.registry.register('orc', ORCFormat);
     this.registry.register('delta', DeltaLakeFormat);
+    this.registry.register('iceberg', IcebergFormat);
     
     console.log('Registered format handlers:', this.registry.getSupportedFormats());
   }

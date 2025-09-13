@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Parquet Viewer</title>
+    <title>Multi-Format Data Viewer</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
     <style>
         :root {
@@ -1665,8 +1665,8 @@
             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
                 <div></div>
                 <div style="text-align: center; flex: 1;">
-                    <h1>⚡ Parquet Viewer</h1>
-                    <div class="subtitle">Analyze Parquet files instantly in your browser</div>
+                    <h1>🗂️ Multi-Format Data Viewer</h1>
+                    <div class="subtitle">Analyze Parquet, Arrow, Avro, Delta Lake, and more - all in your browser</div>
                 </div>
                 <button id="themeToggle" class="btn btn-small" onclick="toggleTheme()" title="Toggle light/dark theme">
                     <svg id="themeIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1693,9 +1693,9 @@
             <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
             </svg>
-            <div class="upload-text">Drop Parquet File Here</div>
-            <div class="upload-subtext">Supports .parquet files up to 500MB</div>
-            <input type="file" id="fileInput" class="file-input" accept=".parquet">
+            <div class="upload-text">Drop Data File Here</div>
+            <div class="upload-subtext">Supports .parquet, .arrow, .avro, .jsonl, .orc files up to 500MB</div>
+            <input type="file" id="fileInput" class="file-input" accept=".parquet,.arrow,.feather,.avro,.jsonl,.ndjson,.orc">
             <button class="btn" onclick="document.getElementById('fileInput').click()">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path>
@@ -1966,6 +1966,127 @@
         </div>
     </div>
 
+    <!-- Multi-Format Integration -->
+    <script type="module">
+        import { DataViewerApp } from './src/core/DataViewerApp.js';
+        
+        // Initialize multi-format support
+        const multiFormatApp = new DataViewerApp();
+        window.multiFormatApp = multiFormatApp;
+        
+        // Setup multi-format event listeners
+        multiFormatApp.on('formatDetected', (data) => {
+            console.log(`🎯 Format detected: ${data.format} (confidence: ${(data.confidence * 100).toFixed(1)}%)`);
+            
+            // Update UI to show detected format
+            showFormatBadge(data.format);
+        });
+        
+        multiFormatApp.on('loadComplete', (data) => {
+            console.log(`✅ Loaded ${data.rowCount} rows from ${data.format} file`);
+            
+            // Use existing display functions
+            if (window.displayData) {
+                window.displayData(data.data, data.schema);
+            }
+            
+            // Update global state for compatibility
+            window.state = {
+                ...window.state,
+                selectedFile: { name: `${data.format} file` },
+                currentData: data.data,
+                metadata: data.metadata,
+                schema: data.schema,
+                filteredData: data.data,
+                format: data.format
+            };
+            
+            // Show success message
+            if (window.showToast) {
+                window.showToast(`Successfully loaded ${data.rowCount} rows from ${data.format.toUpperCase()} file!`, 'success');
+            }
+        });
+        
+        multiFormatApp.on('error', (message) => {
+            console.error('❌ Multi-format error:', message);
+            if (window.showError) {
+                window.showError(message);
+            }
+        });
+        
+        // Function to show format badge
+        function showFormatBadge(format) {
+            let badge = document.getElementById('formatBadge');
+            if (!badge) {
+                badge = document.createElement('div');
+                badge.id = 'formatBadge';
+                badge.style.cssText = `
+                    position: absolute;
+                    top: 10px;
+                    right: 10px;
+                    padding: 6px 12px;
+                    border-radius: 20px;
+                    font-size: 12px;
+                    font-weight: bold;
+                    text-transform: uppercase;
+                    z-index: 1000;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+                `;
+                document.querySelector('.upload-area').appendChild(badge);
+            }
+            
+            // Format-specific styling
+            const formatStyles = {
+                parquet: { bg: '#e3f2fd', color: '#1976d2' },
+                arrow: { bg: '#f3e5f5', color: '#7b1fa2' },
+                avro: { bg: '#e8f5e8', color: '#388e3c' },
+                jsonl: { bg: '#fff3e0', color: '#f57c00' },
+                orc: { bg: '#fce4ec', color: '#c2185b' },
+                delta: { bg: '#e1f5fe', color: '#0288d1' },
+                iceberg: { bg: '#f3e5f5', color: '#7b1fa2' }
+            };
+            
+            const style = formatStyles[format] || { bg: '#f5f5f5', color: '#666' };
+            badge.textContent = format.toUpperCase();
+            badge.style.backgroundColor = style.bg;
+            badge.style.color = style.color;
+            badge.style.display = 'block';
+        }
+        
+        // Add directory selection button
+        function addDirectoryButton() {
+            const uploadArea = document.querySelector('.upload-area');
+            if (!document.getElementById('directoryBtn')) {
+                const dirBtn = document.createElement('button');
+                dirBtn.id = 'directoryBtn';
+                dirBtn.className = 'btn btn-secondary';
+                dirBtn.innerHTML = '📂 Select Directory';
+                dirBtn.style.marginLeft = '10px';
+                dirBtn.title = 'Select directory (Delta Lake, Iceberg tables)';
+                
+                dirBtn.addEventListener('click', async () => {
+                    try {
+                        await multiFormatApp.selectLocalDirectory();
+                    } catch (error) {
+                        console.error('Directory selection failed:', error);
+                        if (window.showError) {
+                            window.showError(`Directory selection failed: ${error.message}`);
+                        }
+                    }
+                });
+                
+                const selectBtn = uploadArea.querySelector('button');
+                selectBtn.parentNode.insertBefore(dirBtn, selectBtn.nextSibling);
+            }
+        }
+        
+        // Initialize UI enhancements
+        document.addEventListener('DOMContentLoaded', () => {
+            addDirectoryButton();
+            console.log('🚀 Multi-format support initialized!');
+            console.log('📋 Supported formats:', multiFormatApp.registry.getSupportedFormats());
+        });
+    </script>
 
     <script type="module">
         import { parquetMetadata, parquetRead, parquetSchema } from 'https://cdn.jsdelivr.net/npm/hyparquet@1.16.0/+esm';
@@ -2248,8 +2369,23 @@
         }
 
         async function handleFile(file) {
+            // Try multi-format detection first
+            try {
+                const format = await window.multiFormatApp.detector.detect(file);
+                console.log(`🔍 Detected format: ${format}`);
+                
+                if (format !== 'unknown' && format !== 'parquet') {
+                    // Use multi-format handler for non-Parquet files
+                    await window.multiFormatApp.handleFileInput(file);
+                    return;
+                }
+            } catch (error) {
+                console.warn('Multi-format detection failed:', error);
+            }
+
+            // Continue with Parquet handling
             if (!file.name.toLowerCase().endsWith('.parquet')) {
-                showError('Please select a valid .parquet file');
+                showError('Please select a supported data file (.parquet, .arrow, .avro, .jsonl, .orc)');
                 return;
             }
 

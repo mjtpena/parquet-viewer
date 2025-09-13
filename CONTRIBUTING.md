@@ -1,6 +1,6 @@
-# Contributing to Parquet Viewer
+# Contributing to Multi-Format Data Viewer
 
-Thank you for your interest in contributing to Parquet Viewer! This document provides guidelines for contributing to the project.
+Thank you for your interest in contributing to Multi-Format Data Viewer! This document provides guidelines for contributing to the project.
 
 ## 🌟 Ways to Contribute
 
@@ -8,7 +8,7 @@ Thank you for your interest in contributing to Parquet Viewer! This document pro
 - **Feature Requests**: Suggest new functionality
 - **Code Contributions**: Submit bug fixes or new features
 - **Documentation**: Improve documentation and examples
-- **Testing**: Help test the application with different Parquet files
+- **Testing**: Help test the application with different data file formats
 
 ## 🚀 Getting Started
 
@@ -28,7 +28,7 @@ When reporting bugs, please include:
 - **Steps to reproduce** the problem
 - **Expected behavior** vs actual behavior
 - **Browser and version** information
-- **Sample Parquet file** (if possible) or description of file structure
+- **Sample data file** (if possible) or description of file structure
 - **Error messages** from browser console (if any)
 
 ### Bug Report Template
@@ -53,7 +53,7 @@ What actually happened.
 - Browser: [e.g. Chrome 91.0]
 - OS: [e.g. macOS 12.0]
 - File size: [e.g. 10MB]
-- Parquet structure: [brief description]
+- File structure: [brief description]
 
 **Additional Context:**
 Any other context about the problem.
@@ -89,7 +89,7 @@ For feature requests, please:
 ### Testing Your Changes
 
 1. **Test with various file sizes**: Small (KB) to large (100MB+)
-2. **Test different Parquet structures**: Different column types, encodings, compression
+2. **Test different data formats**: Parquet, Arrow, Avro, JSONL, ORC, Delta Lake, Iceberg
 3. **Browser testing**: Test in Chrome, Firefox, Safari, and Edge
 4. **Mobile testing**: Verify responsive design on mobile devices
 5. **Performance testing**: Monitor memory usage with large files
@@ -164,7 +164,7 @@ Any additional information
 We're particularly interested in contributions for:
 
 - **Performance optimizations** for large files
-- **Parquet file writing** capabilities (real Parquet export, not CSV)
+- **Multi-format export** capabilities (Parquet, Arrow, etc., not just CSV)
 - **Advanced filtering** and search capabilities
 - **Enhanced data editing** features (data validation, type checking)
 - **Column statistics** and data profiling
@@ -177,7 +177,7 @@ We're particularly interested in contributions for:
 
 - **Be respectful** and constructive in discussions
 - **Help others** with questions and issues
-- **Share knowledge** about Parquet format and browser limitations
+- **Share knowledge** about data formats and browser limitations
 - **Provide feedback** on proposed changes
 - **Test beta features** and report findings
 
@@ -196,4 +196,4 @@ If you have questions about contributing:
 2. **Create a new issue** with the "question" label
 3. **Be specific** about what you're trying to achieve
 
-Thank you for contributing to Parquet Viewer! 🎉
+Thank you for contributing to Multi-Format Data Viewer! 🎉

@@ -1,8 +1,8 @@
-# ⚡ Parquet Viewer
+# ⚡ Multi-Format Data Viewer
 
-A powerful, modern, browser-based Parquet file viewer that runs entirely in your browser with zero uploads required. Analyze and explore your Parquet files privately and securely with advanced features and beautiful UI.
+A powerful, modern, browser-based data viewer that supports multiple formats (Parquet, Arrow, Avro, JSONL, ORC, Delta Lake, Iceberg) and runs entirely in your browser with zero uploads required. Analyze and explore your data files privately and securely with advanced features and beautiful UI.
 
-![Parquet Viewer Screenshot](https://via.placeholder.com/800x400/1e1e1e/ffffff?text=🗃️+Parquet+Viewer+-+Modern+Browser-based+Analytics)
+![Multi-Format Data Viewer Screenshot](https://via.placeholder.com/800x400/1e1e1e/ffffff?text=🗃️+Multi-Format+Data+Viewer+-+Modern+Browser-based+Analytics)
 
 ## 🌟 Features
 
@@ -23,7 +23,7 @@ A powerful, modern, browser-based Parquet file viewer that runs entirely in your
 - **View/Edit Mode Toggle**: Switch between viewing and editing modes
 
 ### 🎨 Modern Interface
-- **Drag & Drop Support**: Simply drag Parquet files onto the interface
+- **Drag & Drop Support**: Simply drag data files onto the interface
 - **VSCode-Like Themes**: Beautiful dark and light themes with proper contrast
 - **Responsive Design**: Beautiful interface that works on all devices
 - **Collapsible Tree Views**: Organized metadata display with expandable sections
@@ -78,7 +78,7 @@ A powerful, modern, browser-based Parquet file viewer that runs entirely in your
 
 ## 🔧 How It Works
 
-1. **📂 Select or Drop** a `.parquet` file (up to 500MB)
+1. **📂 Select or Drop** a data file in any supported format (up to 500MB)
 2. **⚡ Automatic Processing** with real-time progress updates
 3. **🔍 Explore Schema** - inspect column types, encodings, and metadata in collapsible tree views
 4. **📊 Browse & Edit Data** - search, sort, navigate, and edit data in-place
@@ -244,11 +244,11 @@ We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guid
 
 ## ⭐ Support the Project
 
-If you find Parquet Viewer useful:
+If you find Multi-Format Data Viewer useful:
 
 - ⭐ **Star the repository** on GitHub
 - 🐛 **Report bugs** and request features
-- 🔄 **Share with colleagues** who work with Parquet files
+- 🔄 **Share with colleagues** who work with data files
 - 💡 **Contribute improvements** via pull requests
 - 📢 **Spread the word** on social media
 
