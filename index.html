@@ -372,6 +372,25 @@
             border-color: var(--vscode-accent);
         }
 
+        .upload-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+
+        .btn-cloud {
+            background: var(--vscode-accent);
+            border-color: var(--vscode-accent);
+            color: white;
+        }
+
+        .btn-cloud:hover {
+            background: var(--vscode-accent-hover);
+            border-color: var(--vscode-accent-hover);
+        }
+
         .btn-small {
             padding: 6px 16px;
             font-size: 0.9rem;
@@ -1696,13 +1715,21 @@
             <div class="upload-text">Drop Data File Here</div>
             <div class="upload-subtext">Supports .parquet, .arrow, .avro, .jsonl, .orc files up to 500MB</div>
             <input type="file" id="fileInput" class="file-input" accept=".parquet,.arrow,.feather,.avro,.jsonl,.ndjson,.orc">
-            <button class="btn" onclick="document.getElementById('fileInput').click()">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path>
-                    <polyline points="14,2 14,8 20,8"></polyline>
-                </svg>
-                Select File
-            </button>
+            <div class="upload-buttons">
+                <button class="btn" onclick="document.getElementById('fileInput').click()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path>
+                        <polyline points="14,2 14,8 20,8"></polyline>
+                    </svg>
+                    Select Local File
+                </button>
+                <button class="btn btn-cloud" onclick="openCloudStorage()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z"></path>
+                    </svg>
+                    Connect to Cloud Storage
+                </button>
+            </div>
             
             <div class="credits">
                 <a href="https://github.com/mjtpena/parquet-viewer" target="_blank" rel="noopener" class="credits-link">
@@ -3442,6 +3469,60 @@
                 timeout = setTimeout(later, wait);
             };
         }
+
+        // Cloud Storage Integration
+        let storageManager;
+
+        async function initializeStorageManager() {
+            try {
+                const { StorageManager } = await import('./src/core/StorageManager.js');
+                storageManager = new StorageManager();
+
+                // Listen for cloud file selection events
+                window.addEventListener('cloudFileSelected', async (event) => {
+                    const { file, metadata } = event.detail;
+
+                    // Process the cloud file like a local file
+                    state.selectedFile = file;
+                    state.fileMetadata = metadata;
+
+                    // Hide upload section and show loading
+                    document.getElementById('uploadSection').style.display = 'none';
+                    document.getElementById('loadingSection').classList.remove('hidden');
+
+                    try {
+                        await processFile(file);
+                    } catch (error) {
+                        showError(`Failed to process cloud file: ${error.message}`);
+                        // Show upload section again if processing fails
+                        document.getElementById('uploadSection').style.display = 'block';
+                        document.getElementById('loadingSection').classList.add('hidden');
+                    }
+                });
+
+                console.log('Cloud storage integration initialized');
+            } catch (error) {
+                console.error('Failed to initialize cloud storage:', error);
+            }
+        }
+
+        // Function called by the cloud storage button
+        window.openCloudStorage = async function() {
+            if (!storageManager) {
+                await initializeStorageManager();
+            }
+
+            if (storageManager) {
+                await storageManager.showCloudStorageConnector();
+            } else {
+                showError('Cloud storage feature is not available');
+            }
+        };
+
+        // Initialize cloud storage when app loads
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeStorageManager();
+        });
     </script>
 </body>
 </html>

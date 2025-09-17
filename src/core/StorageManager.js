@@ -11,7 +11,7 @@ export class StorageManager {
       // Dynamic import of storage adapters
       const { LocalFileAdapter } = await import('../storage/LocalFileAdapter.js');
       const { CloudStorageAdapter } = await import('../storage/CloudStorageAdapter.js');
-      
+
       // Register local file adapter
       const localAdapter = new LocalFileAdapter();
       this.adapters.set('local', localAdapter);
@@ -21,7 +21,7 @@ export class StorageManager {
         capabilities: localAdapter.getCompatibilityInfo()
       });
 
-      // Register cloud storage adapters
+      // Register OAuth cloud storage adapters
       const providers = ['gdrive', 'dropbox', 'onedrive'];
       for (const provider of providers) {
         this.adapters.set(provider, new CloudStorageAdapter(provider));
@@ -31,6 +31,28 @@ export class StorageManager {
           provider
         });
       }
+
+      // Register direct cloud storage adapters (URL-based)
+      this.connectionStatus.set('adls', {
+        connected: false,
+        type: 'direct-cloud',
+        provider: 'adls',
+        displayName: 'Azure Data Lake Storage Gen2'
+      });
+
+      this.connectionStatus.set('s3', {
+        connected: false,
+        type: 'direct-cloud',
+        provider: 's3',
+        displayName: 'Amazon S3'
+      });
+
+      this.connectionStatus.set('gcs', {
+        connected: false,
+        type: 'direct-cloud',
+        provider: 'gcs',
+        displayName: 'Google Cloud Storage'
+      });
 
       console.log('Storage adapters initialized:', Array.from(this.adapters.keys()));
     } catch (error) {
@@ -296,21 +318,105 @@ export class StorageManager {
     }
   }
 
+  // Cloud storage connection UI
+  async showCloudStorageConnector() {
+    try {
+      const { CloudStorageConnector } = await import('../ui/CloudStorageConnector.js');
+
+      if (!this.cloudConnector) {
+        this.cloudConnector = new CloudStorageConnector(this);
+      }
+
+      this.cloudConnector.show();
+    } catch (error) {
+      console.error('Failed to load cloud storage connector:', error);
+      alert('Failed to load cloud storage connector. Please try again.');
+    }
+  }
+
+  // Direct cloud storage connection (for URL-based providers)
+  async connectToDirectCloudStorage(provider, url, credentials = {}) {
+    try {
+      let adapter;
+
+      if (provider === 'adls') {
+        const { ADLSGen2Adapter } = await import('../storage/ADLSGen2Adapter.js');
+        adapter = new ADLSGen2Adapter();
+      } else if (provider === 's3') {
+        const { S3Adapter } = await import('../storage/S3Adapter.js');
+        adapter = new S3Adapter();
+      } else if (provider === 'gcs') {
+        const { GCSAdapter } = await import('../storage/GCSAdapter.js');
+        adapter = new GCSAdapter();
+      } else {
+        throw new Error(`Unsupported direct cloud provider: ${provider}`);
+      }
+
+      const result = await adapter.connect(url, credentials);
+
+      this.adapters.set(provider, adapter);
+      this.connectionStatus.set(provider, {
+        connected: true,
+        type: 'direct-cloud',
+        provider,
+        connectedAt: new Date(),
+        connectionInfo: result
+      });
+
+      this.setActiveAdapter(provider);
+      return result;
+
+    } catch (error) {
+      this.connectionStatus.set(provider, {
+        connected: false,
+        type: 'direct-cloud',
+        provider,
+        error: error.message
+      });
+      throw error;
+    }
+  }
+
+  async disconnectFromDirectCloudStorage(provider) {
+    const adapter = this.adapters.get(provider);
+    if (adapter && adapter.disconnect) {
+      adapter.disconnect();
+    }
+
+    this.adapters.delete(provider);
+    this.connectionStatus.set(provider, {
+      connected: false,
+      type: 'direct-cloud',
+      provider
+    });
+
+    if (this.activeAdapter === provider) {
+      this.activeAdapter = null;
+    }
+  }
+
   // Cleanup
   async cleanup() {
     // Disconnect from all cloud providers
     for (const [provider, status] of this.connectionStatus) {
       if (status.connected && status.type === 'cloud') {
         await this.disconnectFromCloud(provider);
+      } else if (status.connected && status.type === 'direct-cloud') {
+        await this.disconnectFromDirectCloudStorage(provider);
       }
     }
 
     this.adapters.clear();
     this.connectionStatus.clear();
     this.activeAdapter = null;
-    
+
     if (this.eventListeners) {
       this.eventListeners.clear();
+    }
+
+    if (this.cloudConnector) {
+      this.cloudConnector.hide();
+      this.cloudConnector = null;
     }
   }
 }
