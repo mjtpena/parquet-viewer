@@ -2144,6 +2144,7 @@
             setupEventListeners();
             setupKeyboardShortcuts();
             initializeTheme();
+            initializeStorageManager();
         }
 
         function initializeTheme() {
@@ -3519,10 +3520,7 @@
             }
         };
 
-        // Initialize cloud storage when app loads
-        document.addEventListener('DOMContentLoaded', () => {
-            initializeStorageManager();
-        });
+        // Cloud storage initialization is now handled in initializeApp()
     </script>
 </body>
 </html>
