@@ -1,6 +1,6 @@
 # ⚡ Multi-Format Data Viewer
 
-A powerful, modern, browser-based data viewer that supports multiple formats (Parquet, Arrow, Avro, JSONL, ORC, Delta Lake, Iceberg) and runs entirely in your browser with zero uploads required. Analyze and explore your data files privately and securely with advanced features and beautiful UI.
+A powerful, modern, browser-based data viewer that supports multiple formats (Parquet, Arrow, Avro, JSONL, ORC, Delta Lake, Iceberg) and **connects directly to cloud storage** (Azure, S3, GCS). Runs entirely in your browser with zero uploads required. Analyze and explore your data files privately and securely with advanced features and beautiful UI.
 
 ![Multi-Format Data Viewer Screenshot](https://via.placeholder.com/800x400/1e1e1e/ffffff?text=🗃️+Multi-Format+Data+Viewer+-+Modern+Browser-based+Analytics)
 
@@ -11,6 +11,13 @@ A powerful, modern, browser-based data viewer that supports multiple formats (Pa
 - **No Installation Required**: Just open the web app and start analyzing
 - **Local Processing**: All parsing and analysis happens on your device
 - **No Data Storage**: Files are not saved or cached anywhere
+- **Direct Cloud Access**: Connect to your cloud storage without proxies or backends
+
+### ☁️ Cloud Storage Integration
+- **Azure Data Lake Storage Gen2**: SAS token authentication, multiple URL formats
+- **Amazon S3**: Access key authentication, supports S3-compatible services
+- **Google Cloud Storage**: OAuth token authentication, public bucket support
+- **Enterprise Ready**: Temporary credentials, CORS-aware, secure browser access
 
 ### 📊 Data Analysis & Editing
 - **Advanced Schema Inspection**: View column types, encodings, compression, and metadata
@@ -78,12 +85,19 @@ A powerful, modern, browser-based data viewer that supports multiple formats (Pa
 
 ## 🔧 How It Works
 
+### 📂 Local Files
 1. **📂 Select or Drop** a data file in any supported format (up to 500MB)
 2. **⚡ Automatic Processing** with real-time progress updates
 3. **🔍 Explore Schema** - inspect column types, encodings, and metadata in collapsible tree views
 4. **📊 Browse & Edit Data** - search, sort, navigate, and edit data in-place
 5. **💾 Export Modified Data** - download your modifications as CSV files
-6. **📤 Export Original Data** - convert to CSV, JSON, or schema formats
+
+### ☁️ Cloud Storage
+1. **🔗 Connect to Cloud Storage** - click the cloud button in the interface
+2. **🎯 Select Provider** - choose Azure, S3, or Google Cloud Storage
+3. **📋 Enter Details** - paste your storage URL and add credentials
+4. **🌐 Browse Files** - navigate your cloud storage like a desktop app
+5. **📊 Analyze Data** - click any data file to load and analyze instantly
 
 ## 🛠️ Technical Details
 
@@ -95,7 +109,10 @@ A powerful, modern, browser-based data viewer that supports multiple formats (Pa
 
 ### Libraries Used
 - **[Hyparquet v1.16.0](https://github.com/hyparam/hyparquet)**: Fast, lightweight Parquet parser
-- **No other dependencies**: Keeps the application fast and secure
+- **Apache Arrow**: In-browser Arrow file processing
+- **AVSC**: Avro schema and data processing
+- **Cloud APIs**: Direct REST API integration (Azure, S3, GCS)
+- **No heavy frameworks**: Keeps the application fast and secure
 
 ### Browser Support
 - **Chrome 80+** ✅
@@ -109,6 +126,45 @@ A powerful, modern, browser-based data viewer that supports multiple formats (Pa
 - **Memory Usage**: ~2-3x file size during processing
 - **Supported Encodings**: All standard Parquet encodings
 - **Compression Support**: GZIP, Snappy, LZ4, ZSTD
+
+## ☁️ Cloud Storage Setup
+
+### Azure Data Lake Storage Gen2
+```
+URL formats supported:
+• abfss://container@account.dfs.core.windows.net/path
+• https://account.dfs.core.windows.net/container/path
+• https://account.blob.core.windows.net/container/path
+
+Authentication:
+• SAS Token (recommended for browser use)
+• Anonymous/Public (for public containers)
+```
+
+### Amazon S3
+```
+URL formats supported:
+• s3://bucket-name/path
+• https://bucket-name.s3.region.amazonaws.com/path
+• https://s3.region.amazonaws.com/bucket-name/path
+
+Authentication:
+• Access Key ID + Secret Access Key
+• Session Token (for temporary credentials)
+• Anonymous/Public (for public buckets)
+```
+
+### Google Cloud Storage
+```
+URL formats supported:
+• gs://bucket-name/path
+• https://storage.googleapis.com/bucket-name/path
+• https://bucket-name.storage.googleapis.com/path
+
+Authentication:
+• OAuth Access Token (get via: gcloud auth print-access-token)
+• Anonymous/Public (for public buckets)
+```
 
 ## 🎯 Use Cases
 

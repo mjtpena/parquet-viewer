@@ -2082,15 +2082,19 @@
         
         // Add directory selection button
         function addDirectoryButton() {
-            const uploadArea = document.querySelector('.upload-area');
-            if (!document.getElementById('directoryBtn')) {
+            const uploadButtons = document.querySelector('.upload-buttons');
+            if (uploadButtons && !document.getElementById('directoryBtn')) {
                 const dirBtn = document.createElement('button');
                 dirBtn.id = 'directoryBtn';
                 dirBtn.className = 'btn btn-secondary';
-                dirBtn.innerHTML = '📂 Select Directory';
-                dirBtn.style.marginLeft = '10px';
+                dirBtn.innerHTML = `
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"></path>
+                    </svg>
+                    Select Directory
+                `;
                 dirBtn.title = 'Select directory (Delta Lake, Iceberg tables)';
-                
+
                 dirBtn.addEventListener('click', async () => {
                     try {
                         await multiFormatApp.selectLocalDirectory();
@@ -2101,18 +2105,13 @@
                         }
                     }
                 });
-                
-                const selectBtn = uploadArea.querySelector('button');
-                selectBtn.parentNode.insertBefore(dirBtn, selectBtn.nextSibling);
+
+                // Insert the directory button in the upload-buttons container
+                uploadButtons.appendChild(dirBtn);
             }
         }
         
-        // Initialize UI enhancements
-        document.addEventListener('DOMContentLoaded', () => {
-            addDirectoryButton();
-            console.log('🚀 Multi-format support initialized!');
-            console.log('📋 Supported formats:', multiFormatApp.registry.getSupportedFormats());
-        });
+        // Multi-format initialization is now handled in initializeApp()
     </script>
 
     <script type="module">
@@ -2145,6 +2144,7 @@
             setupKeyboardShortcuts();
             initializeTheme();
             initializeStorageManager();
+            addDirectoryButton();
         }
 
         function initializeTheme() {

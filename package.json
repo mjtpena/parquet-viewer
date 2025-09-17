@@ -1,7 +1,7 @@
 {
   "name": "multi-format-data-viewer",
-  "version": "2.0.0",
-  "description": "Client-side data viewer supporting multiple formats: Parquet, Arrow, Avro, ORC, Delta Lake, JSON Lines",
+  "version": "3.0.0",
+  "description": "Client-side data viewer with cloud storage integration: Parquet, Arrow, Avro, ORC, Delta Lake, Iceberg from Azure, S3, GCS",
   "type": "module",
   "main": "index.html",
   "scripts": {
