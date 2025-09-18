@@ -2011,22 +2011,23 @@
         
         multiFormatApp.on('loadComplete', (data) => {
             console.log(`✅ Loaded ${data.rowCount} rows from ${data.format} file`);
-            
-            // Use existing display functions
-            if (window.displayData) {
-                window.displayData(data.data, data.schema);
-            }
-            
+
+            // Update global state with the loaded data
+            state.data = data.data || [];
+            state.filteredData = [...state.data];
+            state.schema = data.schema;
+            state.metadata = data.metadata || null;
+            state.selectedFile = { name: data.fileName || `${data.format} file` };
+            state.currentPage = 0;
+            state.searchTerm = '';
+            state.sortColumn = null;
+            state.sortDirection = 'asc';
+
+            // Display the results using existing functions
+            showResults();
+
             // Update global state for compatibility
-            window.state = {
-                ...window.state,
-                selectedFile: { name: `${data.format} file` },
-                currentData: data.data,
-                metadata: data.metadata,
-                schema: data.schema,
-                filteredData: data.data,
-                format: data.format
-            };
+            window.state = state;
             
             // Show success message
             if (window.showToast) {
@@ -2397,22 +2398,12 @@
         }
 
         async function handleFile(file) {
-            // Try multi-format detection first
-            try {
-                const format = await window.multiFormatApp.detector.detect(file);
-                console.log(`🔍 Detected format: ${format}`);
-                
-                if (format !== 'unknown' && format !== 'parquet') {
-                    // Use multi-format handler for non-Parquet files
-                    await window.multiFormatApp.handleFileInput(file);
-                    return;
-                }
-            } catch (error) {
-                console.warn('Multi-format detection failed:', error);
-            }
+            // Check if file has supported extension
+            const supportedExtensions = ['.parquet', '.arrow', '.feather', '.avro', '.jsonl', '.ndjson', '.orc'];
+            const fileName = file.name.toLowerCase();
+            const isSupported = supportedExtensions.some(ext => fileName.endsWith(ext));
 
-            // Continue with Parquet handling
-            if (!file.name.toLowerCase().endsWith('.parquet')) {
+            if (!isSupported) {
                 showError('Please select a supported data file (.parquet, .arrow, .avro, .jsonl, .orc)');
                 return;
             }
@@ -2422,41 +2413,14 @@
                 return;
             }
 
-            state.selectedFile = file;
-            state.processingStartTime = performance.now();
-            
-            showLoading();
-            updateProgress(10, 'Reading file...');
-
+            // Use multi-format handler for ALL supported files
             try {
-                const buffer = await file.arrayBuffer();
-                updateProgress(30, 'Parsing metadata...');
-                
-                // Parse metadata
-                state.metadata = parquetMetadata(buffer);
-                state.schema = parquetSchema(state.metadata);
-                updateProgress(50, 'Loading data...');
-                
-                // Read data with progress tracking
-                await parquetRead({
-                    file: buffer,
-                    rowFormat: 'object',
-                    onComplete: (data) => {
-                        console.log('Data loaded:', data.length, 'rows');
-                        state.data = data;
-                        updateProgress(90, 'Finalizing...');
-                    }
-                });
-                console.log('Final data check:', state.data.length, 'rows');
-                updateProgress(100, 'Complete!');
-                
-                setTimeout(() => {
-                    showResults();
-                }, 500);
-                
+                console.log(`🔍 Processing file: ${file.name}`);
+                state.processingStartTime = performance.now();
+                await window.multiFormatApp.handleFileInput(file);
             } catch (error) {
                 console.error('Error processing file:', error);
-                showError(error.message || 'Failed to read file. Please ensure it\'s a valid Parquet file.');
+                showError(error.message || 'Failed to read file. Please ensure it\'s a valid data file.');
             }
         }
 
@@ -3492,9 +3456,12 @@
                     document.getElementById('loadingSection').classList.remove('hidden');
 
                     try {
-                        await processFile(file);
+                        state.processingStartTime = performance.now();
+                        await window.multiFormatApp.handleFileInput(file);
                     } catch (error) {
-                        showError(`Failed to process cloud file: ${error.message}`);
+                        if (window.showError) {
+                            window.showError(`Failed to process cloud file: ${error.message}`);
+                        }
                         // Show upload section again if processing fails
                         document.getElementById('uploadSection').style.display = 'block';
                         document.getElementById('loadingSection').classList.add('hidden');
