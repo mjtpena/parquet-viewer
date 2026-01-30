@@ -1,241 +1,87 @@
 export class StorageManager {
   constructor() {
-    this.adapters = new Map();
-    this.activeAdapter = null;
-    this.connectionStatus = new Map();
-    this.initializeAdapters();
+    this.localAdapter = null;
+    this.eventListeners = null;
+    this.initializeAdapter();
   }
 
-  async initializeAdapters() {
+  async initializeAdapter() {
     try {
-      // Dynamic import of storage adapters
+      // Only local file adapter
       const { LocalFileAdapter } = await import('../storage/LocalFileAdapter.js');
-      const { CloudStorageAdapter } = await import('../storage/CloudStorageAdapter.js');
-
-      // Register local file adapter
-      const localAdapter = new LocalFileAdapter();
-      this.adapters.set('local', localAdapter);
-      this.connectionStatus.set('local', {
-        connected: true,
-        type: 'local',
-        capabilities: localAdapter.getCompatibilityInfo()
-      });
-
-      // Register OAuth cloud storage adapters
-      const providers = ['gdrive', 'dropbox', 'onedrive'];
-      for (const provider of providers) {
-        this.adapters.set(provider, new CloudStorageAdapter(provider));
-        this.connectionStatus.set(provider, {
-          connected: false,
-          type: 'cloud',
-          provider
-        });
-      }
-
-      // Register direct cloud storage adapters (URL-based)
-      this.connectionStatus.set('adls', {
-        connected: false,
-        type: 'direct-cloud',
-        provider: 'adls',
-        displayName: 'Azure Data Lake Storage Gen2'
-      });
-
-      this.connectionStatus.set('s3', {
-        connected: false,
-        type: 'direct-cloud',
-        provider: 's3',
-        displayName: 'Amazon S3'
-      });
-
-      this.connectionStatus.set('gcs', {
-        connected: false,
-        type: 'direct-cloud',
-        provider: 'gcs',
-        displayName: 'Google Cloud Storage'
-      });
-
-      console.log('Storage adapters initialized:', Array.from(this.adapters.keys()));
+      this.localAdapter = new LocalFileAdapter();
+      console.log('Local storage adapter initialized');
     } catch (error) {
-      console.error('Failed to initialize storage adapters:', error);
+      console.error('Failed to initialize storage adapter:', error);
     }
-  }
-
-  // Storage adapter management
-  getAdapter(type) {
-    const adapter = this.adapters.get(type);
-    if (!adapter) {
-      throw new Error(`Storage adapter not found: ${type}`);
-    }
-    return adapter;
-  }
-
-  setActiveAdapter(type) {
-    if (!this.adapters.has(type)) {
-      throw new Error(`Cannot set active adapter: ${type} not registered`);
-    }
-    this.activeAdapter = type;
-  }
-
-  getActiveAdapter() {
-    return this.activeAdapter ? this.adapters.get(this.activeAdapter) : null;
   }
 
   // File operations
   async selectFiles(options = {}) {
-    const adapter = this.getActiveAdapter() || this.adapters.get('local');
-    
-    if (adapter.selectFiles) {
-      return await adapter.selectFiles(options);
+    if (!this.localAdapter) {
+      throw new Error('Storage adapter not initialized');
+    }
+
+    if (this.localAdapter.selectFiles) {
+      return await this.localAdapter.selectFiles(options);
     } else {
-      throw new Error('File selection not supported by current adapter');
+      throw new Error('File selection not supported');
     }
   }
 
   async selectDirectory(options = {}) {
-    const adapter = this.getActiveAdapter() || this.adapters.get('local');
-    
-    if (adapter.selectDirectory) {
-      return await adapter.selectDirectory(options);
+    if (!this.localAdapter) {
+      throw new Error('Storage adapter not initialized');
+    }
+
+    if (this.localAdapter.selectDirectory) {
+      return await this.localAdapter.selectDirectory(options);
     } else {
-      throw new Error('Directory selection not supported by current adapter');
+      throw new Error('Directory selection not supported');
     }
   }
 
   async readFile(handle) {
-    const adapter = this.getActiveAdapter() || this.adapters.get('local');
-    
-    if (adapter.readFile) {
-      return await adapter.readFile(handle);
+    if (!this.localAdapter) {
+      throw new Error('Storage adapter not initialized');
+    }
+
+    if (this.localAdapter.readFile) {
+      return await this.localAdapter.readFile(handle);
     } else {
-      throw new Error('File reading not supported by current adapter');
+      throw new Error('File reading not supported');
     }
   }
 
   async listDirectory(dirHandle, options = {}) {
-    const adapter = this.getActiveAdapter() || this.adapters.get('local');
-    
-    if (adapter.listDirectory) {
-      return await adapter.listDirectory(dirHandle, options);
+    if (!this.localAdapter) {
+      throw new Error('Storage adapter not initialized');
+    }
+
+    if (this.localAdapter.listDirectory) {
+      return await this.localAdapter.listDirectory(dirHandle, options);
     } else {
-      throw new Error('Directory listing not supported by current adapter');
+      throw new Error('Directory listing not supported');
     }
-  }
-
-  // Cloud storage operations
-  async connectToCloud(provider, credentials) {
-    const adapter = this.adapters.get(provider);
-    if (!adapter) {
-      throw new Error(`Cloud provider not supported: ${provider}`);
-    }
-
-    try {
-      await adapter.authenticate(credentials.clientId, credentials.redirectUri);
-      
-      this.connectionStatus.set(provider, {
-        connected: true,
-        type: 'cloud',
-        provider,
-        connectedAt: new Date(),
-        info: adapter.getProviderInfo()
-      });
-
-      return true;
-    } catch (error) {
-      this.connectionStatus.set(provider, {
-        connected: false,
-        type: 'cloud',
-        provider,
-        error: error.message
-      });
-      throw error;
-    }
-  }
-
-  async disconnectFromCloud(provider) {
-    const adapter = this.adapters.get(provider);
-    if (adapter && adapter.disconnect) {
-      adapter.disconnect();
-      
-      this.connectionStatus.set(provider, {
-        connected: false,
-        type: 'cloud',
-        provider
-      });
-    }
-  }
-
-  async listCloudFiles(provider, path = '/') {
-    const adapter = this.adapters.get(provider);
-    if (!adapter) {
-      throw new Error(`Cloud provider not supported: ${provider}`);
-    }
-
-    const status = this.connectionStatus.get(provider);
-    if (!status.connected) {
-      throw new Error(`Not connected to ${provider}`);
-    }
-
-    return await adapter.listFiles(path);
-  }
-
-  async downloadCloudFile(provider, fileId) {
-    const adapter = this.adapters.get(provider);
-    if (!adapter) {
-      throw new Error(`Cloud provider not supported: ${provider}`);
-    }
-
-    const status = this.connectionStatus.get(provider);
-    if (!status.connected) {
-      throw new Error(`Not connected to ${provider}`);
-    }
-
-    return await adapter.downloadFile(fileId);
-  }
-
-  // Connection management
-  isConnected(provider) {
-    const status = this.connectionStatus.get(provider);
-    return status ? status.connected : false;
-  }
-
-  getConnectionStatus(provider) {
-    return this.connectionStatus.get(provider);
-  }
-
-  getAllConnectionStatuses() {
-    return Object.fromEntries(this.connectionStatus);
-  }
-
-  getAvailableStorageTypes() {
-    return Array.from(this.adapters.keys());
   }
 
   // Storage capabilities
-  getStorageCapabilities(type) {
-    const adapter = this.adapters.get(type);
-    if (!adapter) return null;
+  getStorageCapabilities() {
+    if (!this.localAdapter) return null;
 
     const capabilities = {
-      type,
-      canSelectFiles: typeof adapter.selectFiles === 'function',
-      canSelectDirectories: typeof adapter.selectDirectory === 'function',
-      canListDirectories: typeof adapter.listDirectory === 'function',
-      supportsStreaming: typeof adapter.createReadStream === 'function',
-      requiresAuth: type !== 'local'
+      type: 'local',
+      canSelectFiles: typeof this.localAdapter.selectFiles === 'function',
+      canSelectDirectories: typeof this.localAdapter.selectDirectory === 'function',
+      canListDirectories: typeof this.localAdapter.listDirectory === 'function',
+      supportsStreaming: typeof this.localAdapter.createReadStream === 'function',
+      requiresAuth: false
     };
 
-    if (type === 'local' && adapter.getCompatibilityInfo) {
-      capabilities.compatibility = adapter.getCompatibilityInfo();
+    if (this.localAdapter.getCompatibilityInfo) {
+      capabilities.compatibility = this.localAdapter.getCompatibilityInfo();
     }
 
-    return capabilities;
-  }
-
-  getAllCapabilities() {
-    const capabilities = {};
-    for (const [type] of this.adapters) {
-      capabilities[type] = this.getStorageCapabilities(type);
-    }
     return capabilities;
   }
 
@@ -244,7 +90,7 @@ export class StorageManager {
     const extensionSet = new Set(
       extensions.map(ext => ext.toLowerCase().replace('.', ''))
     );
-    
+
     return files.filter(file => {
       if (file.type !== 'file') return false;
       const extension = file.name.split('.').pop()?.toLowerCase();
@@ -288,11 +134,11 @@ export class StorageManager {
     if (!this.eventListeners) {
       this.eventListeners = new Map();
     }
-    
+
     if (!this.eventListeners.has(event)) {
       this.eventListeners.set(event, []);
     }
-    
+
     this.eventListeners.get(event).push(callback);
   }
 
@@ -318,105 +164,12 @@ export class StorageManager {
     }
   }
 
-  // Cloud storage connection UI
-  async showCloudStorageConnector() {
-    try {
-      const { CloudStorageConnector } = await import('../ui/CloudStorageConnector.js');
-
-      if (!this.cloudConnector) {
-        this.cloudConnector = new CloudStorageConnector(this);
-      }
-
-      this.cloudConnector.show();
-    } catch (error) {
-      console.error('Failed to load cloud storage connector:', error);
-      alert('Failed to load cloud storage connector. Please try again.');
-    }
-  }
-
-  // Direct cloud storage connection (for URL-based providers)
-  async connectToDirectCloudStorage(provider, url, credentials = {}) {
-    try {
-      let adapter;
-
-      if (provider === 'adls') {
-        const { ADLSGen2Adapter } = await import('../storage/ADLSGen2Adapter.js');
-        adapter = new ADLSGen2Adapter();
-      } else if (provider === 's3') {
-        const { S3Adapter } = await import('../storage/S3Adapter.js');
-        adapter = new S3Adapter();
-      } else if (provider === 'gcs') {
-        const { GCSAdapter } = await import('../storage/GCSAdapter.js');
-        adapter = new GCSAdapter();
-      } else {
-        throw new Error(`Unsupported direct cloud provider: ${provider}`);
-      }
-
-      const result = await adapter.connect(url, credentials);
-
-      this.adapters.set(provider, adapter);
-      this.connectionStatus.set(provider, {
-        connected: true,
-        type: 'direct-cloud',
-        provider,
-        connectedAt: new Date(),
-        connectionInfo: result
-      });
-
-      this.setActiveAdapter(provider);
-      return result;
-
-    } catch (error) {
-      this.connectionStatus.set(provider, {
-        connected: false,
-        type: 'direct-cloud',
-        provider,
-        error: error.message
-      });
-      throw error;
-    }
-  }
-
-  async disconnectFromDirectCloudStorage(provider) {
-    const adapter = this.adapters.get(provider);
-    if (adapter && adapter.disconnect) {
-      adapter.disconnect();
-    }
-
-    this.adapters.delete(provider);
-    this.connectionStatus.set(provider, {
-      connected: false,
-      type: 'direct-cloud',
-      provider
-    });
-
-    if (this.activeAdapter === provider) {
-      this.activeAdapter = null;
-    }
-  }
-
   // Cleanup
   async cleanup() {
-    // Disconnect from all cloud providers
-    for (const [provider, status] of this.connectionStatus) {
-      if (status.connected && status.type === 'cloud') {
-        await this.disconnectFromCloud(provider);
-      } else if (status.connected && status.type === 'direct-cloud') {
-        await this.disconnectFromDirectCloudStorage(provider);
-      }
-    }
-
-    this.adapters.clear();
-    this.connectionStatus.clear();
-    this.activeAdapter = null;
+    this.localAdapter = null;
 
     if (this.eventListeners) {
       this.eventListeners.clear();
-    }
-
-    if (this.cloudConnector) {
-      this.cloudConnector.hide();
-      this.cloudConnector = null;
     }
   }
 }

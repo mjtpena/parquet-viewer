@@ -1,7 +1,7 @@
 {
-  "name": "multi-format-data-viewer",
-  "version": "3.0.0",
-  "description": "Client-side data viewer with cloud storage integration: Parquet, Arrow, Avro, ORC, Delta Lake, Iceberg from Azure, S3, GCS",
+  "name": "parquet-viewer",
+  "version": "4.0.0",
+  "description": "Client-side Parquet file viewer with local-only processing - view, analyze, and export Parquet files entirely in your browser",
   "type": "module",
   "main": "index.html",
   "scripts": {
@@ -9,32 +9,27 @@
     "serve": "python3 -m http.server 8000",
     "test": "echo 'Testing via browser - open index.html'",
     "lint": "echo 'No linting configured - using browser native ES modules'",
-    "build": "echo 'No build step required - using native ES modules'",
-    "format-test": "echo 'Run format detection tests via browser'"
+    "build": "echo 'No build step required - using native ES modules'"
   },
   "keywords": [
     "parquet",
-    "arrow",
-    "avro",
-    "orc", 
-    "delta-lake",
-    "jsonl",
+    "parquet-viewer",
     "data-viewer",
     "client-side",
     "file-viewer",
-    "data-analysis"
+    "data-analysis",
+    "browser-based",
+    "local-only",
+    "privacy-first"
   ],
   "author": "Data Viewer Team",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-org/parquet-viewer.git"
+    "url": "https://github.com/mjtpena/parquet-viewer.git"
   },
   "dependencies": {
-    "apache-arrow": "^14.0.0",
-    "avsc": "^5.7.0",
-    "hyparquet": "^1.16.0",
-    "localforage": "^1.10.0"
+    "hyparquet": "^1.16.0"
   },
   "devDependencies": {
     "@types/wicg-file-system-access": "^2023.10.0"
@@ -44,7 +39,7 @@
   },
   "browserslist": [
     "Chrome >= 86",
-    "Firefox >= 111", 
+    "Firefox >= 111",
     "Safari >= 15.4",
     "Edge >= 86"
   ],
@@ -61,40 +56,7 @@
         "name": "Apache Parquet",
         "extensions": [".parquet"],
         "status": "full-support",
-        "features": ["read", "metadata", "streaming", "statistics"]
-      },
-      {
-        "name": "Apache Arrow",
-        "extensions": [".arrow", ".feather"],
-        "status": "full-support", 
-        "features": ["read", "metadata", "streaming", "statistics"]
-      },
-      {
-        "name": "Apache Avro",
-        "extensions": [".avro"],
-        "status": "basic-support",
-        "features": ["read", "metadata", "basic-streaming"],
-        "limitations": ["Complex schemas may not parse correctly"]
-      },
-      {
-        "name": "JSON Lines",
-        "extensions": [".jsonl", ".ndjson"],
-        "status": "full-support",
-        "features": ["read", "streaming", "schema-inference", "validation"]
-      },
-      {
-        "name": "Apache ORC",
-        "extensions": [".orc"],
-        "status": "limited-support",
-        "features": ["metadata-only", "format-detection"],
-        "limitations": ["Requires specialized libraries for full data reading"]
-      },
-      {
-        "name": "Delta Lake",
-        "extensions": ["directory"],
-        "status": "basic-support",
-        "features": ["transaction-log", "metadata", "version-history"],
-        "requirements": ["File System Access API"]
+        "features": ["read", "metadata", "streaming", "statistics", "export"]
       }
     ],
     "storage": [
@@ -102,21 +64,6 @@
         "name": "Local Files",
         "status": "full-support",
         "requirements": ["File System Access API or file input"]
-      },
-      {
-        "name": "Local Directories", 
-        "status": "full-support",
-        "requirements": ["File System Access API (Chrome 86+)"]
-      },
-      {
-        "name": "Google Drive",
-        "status": "planned",
-        "requirements": ["OAuth 2.0 setup"]
-      },
-      {
-        "name": "Dropbox",
-        "status": "planned", 
-        "requirements": ["OAuth 2.0 setup"]
       }
     ]
   },
@@ -129,22 +76,21 @@
     },
     "es_modules": {
       "chrome": "61+",
-      "firefox": "60+", 
+      "firefox": "60+",
       "safari": "10.1+",
       "edge": "79+"
     },
     "web_workers": {
       "chrome": "4+",
       "firefox": "3.5+",
-      "safari": "4+", 
+      "safari": "4+",
       "edge": "12+"
     }
   },
   "performance_targets": {
     "file_size": "500MB max without browser crashes",
     "rows": "Process 100k rows in <3 seconds",
-    "formats": "5+ format support",
-    "detection": "95%+ format detection accuracy",
+    "detection": "100% Parquet detection accuracy",
     "memory": "Efficient streaming for large files"
   }
 }
