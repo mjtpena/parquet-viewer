@@ -1995,22 +1995,41 @@
         parquetApp.on('loadComplete', (data) => {
             console.log(`✅ Loaded ${data.rowCount} rows from Parquet file`);
 
+            // Initialize window.state if it doesn't exist
+            if (!window.state) {
+                window.state = {
+                    data: [],
+                    filteredData: [],
+                    metadata: null,
+                    schema: null,
+                    currentPage: 0,
+                    pageSize: 50,
+                    searchTerm: '',
+                    sortColumn: null,
+                    sortDirection: 'asc',
+                    processingStartTime: null,
+                    selectedFile: null,
+                    modifiedCells: new Set(),
+                    isEditing: false,
+                    currentMode: 'view'
+                };
+            }
+
             // Update global state with the loaded data
-            state.data = data.data || [];
-            state.filteredData = [...state.data];
-            state.schema = data.schema;
-            state.metadata = data.metadata || null;
-            state.selectedFile = { name: data.fileName || 'Parquet file' };
-            state.currentPage = 0;
-            state.searchTerm = '';
-            state.sortColumn = null;
-            state.sortDirection = 'asc';
+            window.state.data = data.data || [];
+            window.state.filteredData = [...window.state.data];
+            window.state.schema = data.schema;
+            window.state.metadata = data.metadata || null;
+            window.state.selectedFile = { name: data.fileName || 'Parquet file' };
+            window.state.currentPage = 0;
+            window.state.searchTerm = '';
+            window.state.sortColumn = null;
+            window.state.sortDirection = 'asc';
 
             // Display the results using existing functions
-            showResults();
-
-            // Update global state for compatibility
-            window.state = state;
+            if (window.showResults) {
+                window.showResults();
+            }
 
             // Show success message
             if (window.showToast) {
@@ -2064,8 +2083,8 @@
             badge.style.display = 'block';
         }
         
-        // Add directory selection button
-        function addDirectoryButton() {
+        // Add directory selection button - make it global so other modules can access it
+        window.addDirectoryButton = function() {
             const uploadButtons = document.querySelector('.upload-buttons');
             if (uploadButtons && !document.getElementById('directoryBtn')) {
                 const dirBtn = document.createElement('button');
@@ -2101,24 +2120,27 @@
     <script type="module">
         import { parquetMetadata, parquetRead, parquetSchema } from 'https://cdn.jsdelivr.net/npm/hyparquet@1.16.0/+esm';
         // import { parquetWriteBuffer } from 'https://cdn.jsdelivr.net/npm/hyparquet-writer/+esm';
-        
-        // Global state
-        let state = {
-            data: [],
-            filteredData: [],
-            metadata: null,
-            schema: null,
-            currentPage: 0,
-            pageSize: 50,
-            searchTerm: '',
-            sortColumn: null,
-            sortDirection: 'asc',
-            processingStartTime: null,
-            selectedFile: null,
-            modifiedCells: new Set(),
-            isEditing: false,
-            currentMode: 'view'
-        };
+
+        // Global state - use window.state if already initialized, otherwise create it
+        if (!window.state) {
+            window.state = {
+                data: [],
+                filteredData: [],
+                metadata: null,
+                schema: null,
+                currentPage: 0,
+                pageSize: 50,
+                searchTerm: '',
+                sortColumn: null,
+                sortDirection: 'asc',
+                processingStartTime: null,
+                selectedFile: null,
+                modifiedCells: new Set(),
+                isEditing: false,
+                currentMode: 'view'
+            };
+        }
+        const state = window.state;
 
         // Initialize app
         document.addEventListener('DOMContentLoaded', initializeApp);
@@ -2127,8 +2149,9 @@
             setupEventListeners();
             setupKeyboardShortcuts();
             initializeTheme();
-            initializeStorageManager();
-            addDirectoryButton();
+            if (window.addDirectoryButton) {
+                window.addDirectoryButton();
+            }
         }
 
         function initializeTheme() {
@@ -2386,23 +2409,23 @@
             const isParquet = fileName.endsWith('.parquet');
 
             if (!isParquet) {
-                showError('Please select a Parquet file (.parquet)');
+                window.showError('Please select a Parquet file (.parquet)');
                 return;
             }
 
             if (file.size > 500 * 1024 * 1024) { // 500MB limit
-                showError('File size exceeds 500MB limit. Please select a smaller file.');
+                window.showError('File size exceeds 500MB limit. Please select a smaller file.');
                 return;
             }
 
             // Process Parquet file
             try {
                 console.log(`🔍 Processing Parquet file: ${file.name}`);
-                state.processingStartTime = performance.now();
+                window.state.processingStartTime = performance.now();
                 await window.multiFormatApp.handleFileInput(file);
             } catch (error) {
                 console.error('Error processing Parquet file:', error);
-                showError(error.message || 'Failed to read file. Please ensure it\'s a valid Parquet file.');
+                window.showError(error.message || 'Failed to read file. Please ensure it\'s a valid Parquet file.');
             }
         }
 
@@ -2420,7 +2443,7 @@
             }
         }
 
-        function showToast(message, type = 'success', duration = 3000) {
+        window.showToast = function(message, type = 'success', duration = 3000) {
             const container = document.getElementById('toastContainer');
             const toastId = 'toast-' + Date.now();
             
@@ -2472,7 +2495,7 @@
             document.getElementById('resultsSection').classList.add('hidden');
         }
 
-        function showError(message) {
+        window.showError = function(message) {
             // Show header again when there's an error
             document.querySelector('header').classList.remove('hidden');
             document.getElementById('uploadSection').classList.remove('hidden');
@@ -2480,12 +2503,12 @@
             document.getElementById('errorSection').classList.remove('hidden');
             document.getElementById('resultsSection').classList.add('hidden');
             document.getElementById('errorMessage').textContent = message;
-            showToast(message, 'error');
+            window.showToast(message, 'error');
         }
 
-        function showResults() {
+        window.showResults = function() {
             const processingTime = ((performance.now() - state.processingStartTime) / 1000).toFixed(2);
-            
+
             console.log('showResults called with data:', state.data.length, 'rows');
             
             // Hide header to save space and show results
@@ -2494,8 +2517,8 @@
             document.getElementById('loadingSection').classList.add('hidden');
             document.getElementById('errorSection').classList.add('hidden');
             document.getElementById('resultsSection').classList.remove('hidden');
-            
-            showToast(`File processed successfully in ${processingTime}s`);
+
+            window.showToast(`File processed successfully in ${processingTime}s`);
             
             // Initialize filtered data
             state.filteredData = [...state.data];
